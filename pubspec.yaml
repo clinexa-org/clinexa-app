@@ -1,0 +1,126 @@
+name: clinexa_mobile
+description: "Clinexa Patient App - A mobile application for clinic management"
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+# In Windows, build-name is used as the major, minor, and patch parts
+# of the product and file versions while build-number is used as the build suffix.
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.4.3 <4.0.0"
+
+# Dependencies specify other packages that your package needs in order to work.
+# To automatically upgrade your package dependencies to the latest versions
+# consider running `flutter pub upgrade --major-versions`. Alternatively,
+# dependencies can be manually updated by changing the version numbers below to
+# the latest version available on pub.dev. To see which dependencies have newer
+# versions available, run `flutter pub outdated`.
+dependencies:
+  # --- Core & State Management ---
+  # State management library that helps separate business logic from presentation
+  bloc: ^8.1.4
+  # Flutter widgets that make it easy to integrate the BLoC pattern
+  flutter_bloc: ^8.1.6
+  # Simplify equality comparisons (Crucial for Bloc state changes)
+  equatable: ^2.0.5
+  # Simple Service Locator for Dart and Flutter projects (Dependency Injection)
+  get_it: ^9.2.0
+  # A declarative routing package for Flutter that uses the Router API
+  go_router: ^14.0.0 # Changed from ^17.0.1 to be compatible with Dart 3.4.3
+
+  # --- Networking & Data ---
+  # A powerful HTTP client for Dart (API requests)
+  dio: ^5.9.0
+  # A Dio interceptor that logs network requests and responses in a pretty format
+  pretty_dio_logger: ^1.4.0
+  # Load configuration variables from a .env file at runtime (API Base URL)
+  flutter_dotenv: ^6.0.0
+  # Secure storage for sensitive data (Storing JWT Token securely)
+  flutter_secure_storage: ^9.2.2
+  # Annotations for JSON code generation (For API Models)
+  json_annotation: ^4.9.0
+
+  # --- UI & Utilities ---
+  # The Flutter SDK itself
+  flutter:
+    sdk: flutter
+  # Default set of icon assets used by Cupertino widgets (iOS style)
+  cupertino_icons: ^1.0.6
+  # Date and number formatting (For Appointment times & Prescription dates)
+  intl: ^0.19.0
+  # Easy use of Google Fonts for beautiful typography
+  google_fonts: ^6.2.1
+  # Render SVG files (For Logos and custom icons)
+  flutter_svg: ^2.0.10
+  # Cache images from the internet (For Profile pictures)
+  cached_network_image: ^3.3.1
+  # Display loading indicators and spinners
+  flutter_spinkit: ^5.2.1
+  # Show toast messages for user feedback
+  fluttertoast: ^8.2.8
+  # Date and time picker widgets
+  flutter_datetime_picker_plus: ^2.2.0
+  # Form validation made easy
+  form_field_validator: ^1.1.0
+  pretty_bloc_observer: ^1.0.4
+  dio_smart_retry: ^6.0.0
+  dartz: ^0.10.1
+  # Responsive UI - Screen size adaptation
+  flutter_screenutil: ^5.9.3
+
+dev_dependencies:
+  flutter_lints: ^3.0.0
+  flutter_test:
+    sdk: flutter
+  # Tool to run code generators
+  build_runner: ^2.4.9
+  # Generates code for JSON serialization (To/From JSON)
+  json_serializable: ^6.8.0
+  # Generate native splash screens
+  flutter_native_splash: ^2.4.1
+
+flutter_native_splash:
+  color: "#181A1B"
+  color_dark: "#181A1B"
+  image: assets/images/logo.png
+  branding: assets/images/brandimage.png
+  branding_bottom_padding_ios: 35
+  android_12:
+    image: assets/images/splash_logo_android12.png
+    branding: assets/images/brandimage.png
+    color: "#181A1B"
+    color_dark: "#181A1B"
+  android: true
+  ios: true
+  web: false
+
+flutter:
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+  # To add assets to your application, add an assets section, like this:
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/env/.env.dev
+    - assets/env/.env.prod
+
+  # fonts:
+  #   - family: CustomFont
+  #     fonts:
+  #       - asset: fonts/CustomFont-Regular.ttf
+  #       - asset: fonts/CustomFont-Bold.ttf
+  #         weight: 700
