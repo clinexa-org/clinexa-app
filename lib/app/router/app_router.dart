@@ -2,7 +2,7 @@
 import 'package:clinexa_mobile/features/profile/presentation/pages/profile_page.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../core/storage/onboarding_storage.dart';
+import '../../core/storage/cache_helper.dart';
 import '../../features/auth/presentation/pages/forgot_password_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
@@ -13,14 +13,13 @@ import 'route_names.dart';
 
 class AppRouter {
   static GoRouter createRouter(
-      OnboardingStorage onboardingStorage, String initialLocation) {
+      CacheHelper cacheHelper, String initialLocation) {
     return GoRouter(
       initialLocation: initialLocation,
       routes: [
         GoRoute(
           path: Routes.onboarding,
-          builder: (context, state) =>
-              OnboardingPage(onboardingStorage: onboardingStorage),
+          builder: (context, state) => OnboardingPage(cacheHelper: cacheHelper),
         ),
         GoRoute(
           path: Routes.login,

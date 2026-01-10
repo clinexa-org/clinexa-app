@@ -3,6 +3,7 @@ import 'package:dartz/dartz.dart';
 
 import '../../../../core/errors/failures.dart';
 import '../entities/auth_session_entity.dart';
+import '../entities/user_entity.dart';
 
 abstract class AuthRepository {
   Future<Either<Failure, AuthSessionEntity>> login({
@@ -20,4 +21,6 @@ abstract class AuthRepository {
   Future<Either<Failure, Unit>> logout();
 
   Future<Either<Failure, String?>> getCachedToken();
+
+  Future<Either<Failure, UserEntity?>> getCachedUser();
 }

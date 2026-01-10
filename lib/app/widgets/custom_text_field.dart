@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:iconsax/iconsax.dart';
 
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
@@ -167,9 +168,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         ),
         child: IconButton(
           icon: Icon(
-            _obscureText
-                ? Icons.visibility_outlined
-                : Icons.visibility_off_outlined,
+            _obscureText ? Iconsax.eye : Iconsax.eye_slash,
           ),
           onPressed: () {
             setState(() {

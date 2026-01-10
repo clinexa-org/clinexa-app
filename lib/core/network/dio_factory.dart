@@ -1,17 +1,17 @@
 import 'package:dio/dio.dart';
 
 import '../config/env.dart';
-import '../storage/token_storage.dart';
+import '../storage/cache_helper.dart';
 import 'interceptors/auth_interceptor.dart';
 import 'interceptors/dev_logger_interceptor.dart';
 import 'interceptors/retry_interceptor_builder.dart';
 
 class DioFactory {
-  final TokenStorage tokenStorage;
+  final CacheHelper cacheHelper;
   final bool isProd;
 
   DioFactory({
-    required this.tokenStorage,
+    required this.cacheHelper,
     required this.isProd,
   });
 
@@ -28,7 +28,7 @@ class DioFactory {
       ),
     );
 
-    dio.interceptors.add(AuthInterceptor(tokenStorage));
+    dio.interceptors.add(AuthInterceptor(cacheHelper));
     dio.interceptors.add(buildRetryInterceptor(dio: dio));
 
     if (!isProd) {

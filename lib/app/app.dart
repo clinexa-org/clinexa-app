@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:toastification/toastification.dart';
+
 import 'theme/app_theme.dart';
 
 class ClinexaApp extends StatelessWidget {
@@ -16,11 +18,13 @@ class ClinexaApp extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return MaterialApp.router(
-          debugShowCheckedModeBanner: false,
-          title: 'Clinexa',
-          theme: AppTheme.darkTheme,
-          routerConfig: router,
+        return ToastificationWrapper(
+          child: MaterialApp.router(
+            debugShowCheckedModeBanner: false,
+            title: 'Clinexa',
+            theme: AppTheme.darkTheme,
+            routerConfig: router,
+          ),
         );
       },
     );

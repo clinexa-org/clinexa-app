@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:iconsax/iconsax.dart';
 
-import '../../../../core/utils/validators.dart';
 import '../cubit/patient_cubit.dart';
 import '../cubit/patient_state.dart';
 
@@ -99,7 +99,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     controller: _ageController,
                     decoration: InputDecoration(
                       labelText: 'Age',
-                      prefixIcon: const Icon(Icons.cake),
+                      prefixIcon: const Icon(Iconsax.cake),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -122,7 +122,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     value: _selectedGender,
                     decoration: InputDecoration(
                       labelText: 'Gender',
-                      prefixIcon: const Icon(Icons.wc),
+                      prefixIcon: const Icon(Iconsax.woman),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),

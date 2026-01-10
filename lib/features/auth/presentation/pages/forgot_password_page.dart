@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:iconsax/iconsax.dart';
 
 import '../../../../app/router/route_names.dart';
 import '../../../../app/theme/app_colors.dart';
@@ -68,7 +69,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(
-            Icons.arrow_back,
+            Iconsax.arrow_left_2,
             color: AppColors.textPrimary,
           ),
           onPressed: _navigateToLogin,
@@ -106,7 +107,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   controller: _emailController,
                   labelText: 'Email Address',
                   hintText: 'name@example.com',
-                  prefixIcon: const Icon(Icons.email_outlined),
+                  prefixIcon: const Icon(Iconsax.sms),
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.done,
                   onSubmitted: (_) => _handleSendResetLink(),

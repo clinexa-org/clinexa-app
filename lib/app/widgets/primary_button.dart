@@ -9,13 +9,14 @@ import '../theme/app_text_styles.dart';
 /// Supports full customization while maintaining consistent styling
 class PrimaryButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final bool isLoading;
   final bool isDisabled;
   final Color? backgroundColor;
   final Color? textColor;
   final double? height;
   final double? width;
+  final IconData? icon;
 
   const PrimaryButton({
     super.key,
@@ -27,6 +28,7 @@ class PrimaryButton extends StatelessWidget {
     this.textColor,
     this.height,
     this.width,
+    this.icon,
   });
 
   @override
@@ -53,11 +55,25 @@ class PrimaryButton extends StatelessWidget {
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                 ),
               )
-            : Text(
-                text,
-                style: AppTextStyles.interSemiBoldw600F16.copyWith(
-                  color: textColor ?? Colors.white,
-                ),
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (icon != null) ...[
+                    Icon(
+                      icon,
+                      color: textColor ?? Colors.white,
+                      size: 20.sp,
+                    ),
+                    SizedBox(width: 8.w),
+                  ],
+                  Text(
+                    text,
+                    style: AppTextStyles.interSemiBoldw600F16.copyWith(
+                      color: textColor ?? Colors.white,
+                    ),
+                  ),
+                ],
               ),
       ),
     );

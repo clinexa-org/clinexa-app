@@ -1,35 +1,53 @@
 // features/auth/data/datasources/auth_remote_data_source.dart
+import '../../../../core/models/response_model.dart';
 import '../../../../core/network/api_client.dart';
-import '../models/auth_session_model.dart';
+import '../models/auth_data_model.dart';
 
-class AuthRemoteDataSource {
-  final ApiClient api;
+abstract class AuthRemoteDataSource {
+  Future<ResponseModel<AuthDataModel>> login({
+    required String email,
+    required String password,
+  });
 
-  const AuthRemoteDataSource(this.api);
+  Future<ResponseModel<AuthDataModel>> register({
+    required String name,
+    required String email,
+    required String password,
+    required String role,
+  });
+}
 
-  Future<AuthSessionModel> login({
+class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
+  final ApiClient apiClient;
+
+  AuthRemoteDataSourceImpl(this.apiClient);
+
+  @override
+  Future<ResponseModel<AuthDataModel>> login({
     required String email,
     required String password,
   }) async {
-    final res = await api.post<Map<String, dynamic>>(
+    final response = await apiClient.post(
       '/auth/login',
       data: {
         'email': email,
         'password': password,
       },
     );
-
-    final json = res.data ?? <String, dynamic>{};
-    return AuthSessionModel.fromJson(json);
+    return ResponseModel.fromMap(
+      response.data,
+      (data) => AuthDataModel.fromMap(data),
+    );
   }
 
-  Future<AuthSessionModel> register({
+  @override
+  Future<ResponseModel<AuthDataModel>> register({
     required String name,
     required String email,
     required String password,
     required String role,
   }) async {
-    final res = await api.post<Map<String, dynamic>>(
+    final response = await apiClient.post(
       '/auth/register',
       data: {
         'name': name,
@@ -39,7 +57,9 @@ class AuthRemoteDataSource {
       },
     );
 
-    final json = res.data ?? <String, dynamic>{};
-    return AuthSessionModel.fromJson(json);
+    return ResponseModel.fromMap(
+      response.data,
+      (data) => AuthDataModel.fromMap(data),
+    );
   }
 }

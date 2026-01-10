@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:iconsax/iconsax.dart';
 
 import '../../../../app/router/route_names.dart';
 import '../cubit/patient_cubit.dart';
@@ -28,7 +29,7 @@ class _ProfilePageState extends State<ProfilePage> {
         title: const Text('My Profile'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.edit),
+            icon: const Icon(Iconsax.edit),
             onPressed: () => context.push(Routes.editProfile),
           ),
         ],
@@ -55,7 +56,7 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                  const Icon(Iconsax.danger, size: 64, color: Colors.red),
                   const SizedBox(height: 16),
                   Text(
                     state.errorMessage ?? 'Failed to load profile',
@@ -63,7 +64,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: () => context.read<PatientCubit>().getMyProfile(),
+                    onPressed: () =>
+                        context.read<PatientCubit>().getMyProfile(),
                     child: const Text('Retry'),
                   ),
                 ],
@@ -76,7 +78,8 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.person_off, size: 64, color: Colors.grey),
+                  const Icon(Iconsax.profile_remove,
+                      size: 64, color: Colors.grey),
                   const SizedBox(height: 16),
                   const Text('No profile found'),
                   const SizedBox(height: 8),
@@ -102,26 +105,26 @@ class _ProfilePageState extends State<ProfilePage> {
               children: [
                 const CircleAvatar(
                   radius: 50,
-                  child: Icon(Icons.person, size: 50),
+                  child: Icon(Iconsax.user, size: 50),
                 ),
                 const SizedBox(height: 24),
                 _InfoCard(
-                  icon: Icons.cake,
+                  icon: Iconsax.cake,
                   label: 'Age',
                   value: patient.age?.toString() ?? 'Not set',
                 ),
                 _InfoCard(
-                  icon: Icons.wc,
+                  icon: Iconsax.woman,
                   label: 'Gender',
                   value: patient.gender ?? 'Not set',
                 ),
                 _InfoCard(
-                  icon: Icons.phone,
+                  icon: Iconsax.call,
                   label: 'Phone',
                   value: patient.phone ?? 'Not set',
                 ),
                 _InfoCard(
-                  icon: Icons.location_on,
+                  icon: Iconsax.location,
                   label: 'Address',
                   value: patient.address ?? 'Not set',
                 ),
@@ -136,7 +139,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.warning, color: Colors.orange),
+                        const Icon(Iconsax.warning_2, color: Colors.orange),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(

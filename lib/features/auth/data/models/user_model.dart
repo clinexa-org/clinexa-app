@@ -1,11 +1,14 @@
+import '../../../../core/models/base_model.dart';
 import '../../domain/entities/user_entity.dart';
 
-class UserModel {
+class UserModel extends BaseModel {
   final String id;
   final String name;
   final String email;
   final String role;
   final bool isActive;
+  final DateTime createdAt;
+  final DateTime updatedAt;
 
   const UserModel({
     required this.id,
@@ -13,15 +16,52 @@ class UserModel {
     required this.email,
     required this.role,
     required this.isActive,
+    required this.createdAt,
+    required this.updatedAt,
   });
 
-  factory UserModel.fromJson(Map<String, dynamic> json) {
+  UserModel copyWith({
+    String? id,
+    String? name,
+    String? email,
+    String? role,
+    bool? isActive,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
     return UserModel(
-      id: (json['_id'] ?? json['id'] ?? '').toString(),
-      name: (json['name'] ?? '').toString(),
-      email: (json['email'] ?? '').toString(),
-      role: (json['role'] ?? '').toString(),
-      isActive: (json['isActive'] ?? false) as bool,
+      id: id ?? this.id,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      role: role ?? this.role,
+      isActive: isActive ?? this.isActive,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  Map<String, dynamic> toMap() {
+    return {
+      '_id': id,
+      'name': name,
+      'email': email,
+      'role': role,
+      'is_active': isActive,
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt.toIso8601String(),
+    };
+  }
+
+  factory UserModel.fromMap(Map<String, dynamic> map) {
+    return UserModel(
+      id: map['_id'] as String,
+      name: map['name'] as String,
+      email: map['email'] as String,
+      role: map['role'] as String,
+      isActive: map['is_active'] as bool? ?? true,
+      createdAt: DateTime.parse(map['createdAt'] as String),
+      updatedAt: DateTime.parse(map['updatedAt'] as String),
     );
   }
 
@@ -34,4 +74,8 @@ class UserModel {
       isActive: isActive,
     );
   }
+
+  @override
+  List<Object?> get props =>
+      [id, name, email, role, isActive, createdAt, updatedAt];
 }

@@ -1,31 +1,51 @@
-
-
 import 'package:equatable/equatable.dart';
 
 enum AuthStatus {
   initial,
-  loading,
-  authenticated,
+  // Generic states
+  loading, // Kept for compatibility
+  authenticated, // Kept for compatibility
   unauthenticated,
-  errorWithToast,
+  errorWithToast, // Kept for compatibility
+  // Cache auth
+  authenticatedFromCache, // Silent auth from cached token
+  // Login states
+  loadingLogin,
+  authenticatedFromLogin,
+  errorLogin,
+  // Register states
+  loadingRegister,
+  authenticatedFromRegister,
+  errorRegister,
 }
 
 class AuthState extends Equatable {
   final AuthStatus status;
   final String? token;
+  final String? userName;
+  final String? userId;
   final String? errorMessage;
 
   const AuthState({
     this.status = AuthStatus.initial,
     this.token,
+    this.userName,
+    this.userId,
     this.errorMessage,
   });
 
-  bool get isAuthed => status == AuthStatus.authenticated && (token?.isNotEmpty ?? false);
+  bool get isAuthed =>
+      (status == AuthStatus.authenticated ||
+          status == AuthStatus.authenticatedFromCache ||
+          status == AuthStatus.authenticatedFromLogin ||
+          status == AuthStatus.authenticatedFromRegister) &&
+      (token?.isNotEmpty ?? false);
 
   AuthState copyWith({
     AuthStatus? status,
     String? token,
+    String? userName,
+    String? userId,
     String? errorMessage,
     bool clearError = false,
     bool clearToken = false,
@@ -33,10 +53,12 @@ class AuthState extends Equatable {
     return AuthState(
       status: status ?? this.status,
       token: clearToken ? null : (token ?? this.token),
+      userName: clearToken ? null : (userName ?? this.userName),
+      userId: clearToken ? null : (userId ?? this.userId),
       errorMessage: clearError ? null : errorMessage,
     );
   }
 
   @override
-  List<Object?> get props => [status, token, errorMessage];
+  List<Object?> get props => [status, token, userName, userId, errorMessage];
 }

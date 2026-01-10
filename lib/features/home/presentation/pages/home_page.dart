@@ -1,197 +1,76 @@
-// features/home/presentation/pages/home_page.dart
+import 'package:clinexa_mobile/core/utils/toast_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../app/router/route_names.dart';
-import '../../../auth/presentation/cubit/auth_cubit.dart';
-import '../../../auth/presentation/cubit/auth_state.dart';
+import '../widgets/book_appointment_button.dart';
+import '../widgets/clinic_badge.dart';
+import '../widgets/home_bottom_nav_bar.dart';
+import '../widgets/home_header.dart';
+import '../widgets/next_appointment_card.dart';
+import '../widgets/recent_prescriptions_list.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int _currentIndex = 0;
+
+  final List<Widget> _pages = [
+    const _HomeContent(),
+    const Center(child: Text('Bookings Coming Soon')),
+    const Center(child: Text('Meds Coming Soon')),
+    const Center(child: Text('Profile Coming Soon')),
+  ];
+
+  @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthCubit, AuthState>(
-      listenWhen: (previous, current) => previous.status != current.status,
-      listener: (context, state) {
-        if (state.status == AuthStatus.unauthenticated) {
-          context.go(Routes.login);
-        }
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Clinexa - Patient'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.logout),
-              tooltip: 'Logout',
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (ctx) => AlertDialog(
-                    title: const Text('Logout'),
-                    content: const Text('Are you sure you want to logout?'),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(ctx),
-                        child: const Text('Cancel'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(ctx);
-                          context.read<AuthCubit>().logout();
-                        },
-                        child: const Text('Logout'),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ],
+    return Scaffold(
+      body: SafeArea(
+        child: IndexedStack(
+          index: _currentIndex,
+          children: _pages,
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Welcome to Clinexa! 🏥',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 16),
-              BlocBuilder<AuthCubit, AuthState>(
-                buildWhen: (previous, current) => previous.token != current.token,
-                builder: (context, state) {
-                  return Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Authentication Status',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Icon(
-                                state.isAuthed
-                                    ? Icons.check_circle
-                                    : Icons.cancel,
-                                color: state.isAuthed
-                                    ? Colors.green
-                                    : Colors.red,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                state.isAuthed
-                                    ? 'Authenticated'
-                                    : 'Not Authenticated',
-                                style: TextStyle(
-                                  color: state.isAuthed
-                                      ? Colors.green
-                                      : Colors.red,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                          if (state.token != null) ...[
-                            const SizedBox(height: 8),
-                            Text(
-                              'Token: ${state.token!.substring(0, 20)}...',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey,
-                                fontFamily: 'monospace',
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(height: 24),
-              const Text(
-                'Coming Soon:',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 12),
-              _FeatureCard(
-                icon: Icons.person,
-                title: 'Patient Profile',
-                subtitle: 'Manage your personal information',
-                onTap: () => context.push(Routes.profile),
-              ),
-              _FeatureCard(
-                icon: Icons.calendar_today,
-                title: 'Appointments',
-                subtitle: 'Book and manage appointments',
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Coming in Sprint A3')),
-                  );
-                },
-              ),
-              _FeatureCard(
-                icon: Icons.medication,
-                title: 'Prescriptions',
-                subtitle: 'View your prescriptions',
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Coming in Sprint A4')),
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
+      ),
+      bottomNavigationBar: HomeBottomNavBar(
+        currentIndex: _currentIndex,
+        onTap: (index) => setState(() => _currentIndex = index),
       ),
     );
   }
 }
 
-class _FeatureCard extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  const _FeatureCard({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-  });
+class _HomeContent extends StatelessWidget {
+  const _HomeContent();
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
-          child: Icon(icon, color: Theme.of(context).primaryColor),
-        ),
-        title: Text(title),
-        subtitle: Text(subtitle),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-        onTap: onTap,
+    return SingleChildScrollView(
+      padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: 24.h),
+          const HomeHeader(),
+          SizedBox(height: 24.h),
+          const ClinicBadge(),
+          SizedBox(height: 32.h),
+          const NextAppointmentCard(),
+          SizedBox(height: 24.h),
+          BookAppointmentButton(
+            onPressed: () {
+              ToastHelper.showSuccess(
+                context: context,
+                message: 'Appointment booked successfully',
+              );
+            },
+          ),
+          SizedBox(height: 32.h),
+          const RecentPrescriptionsList(),
+        ],
       ),
     );
   }

@@ -64,12 +64,14 @@ dependencies:
   google_fonts: ^6.2.1
   # Render SVG files (For Logos and custom icons)
   flutter_svg: ^2.0.10
+  # Modern icon pack (Iconsax icons)
+  iconsax: ^0.0.8
   # Cache images from the internet (For Profile pictures)
   cached_network_image: ^3.3.1
   # Display loading indicators and spinners
   flutter_spinkit: ^5.2.1
-  # Show toast messages for user feedback
-  fluttertoast: ^8.2.8
+  # Modern toast notifications with custom designs
+  toastification: ^2.3.0
   # Date and time picker widgets
   flutter_datetime_picker_plus: ^2.2.0
   # Form validation made easy
@@ -79,6 +81,7 @@ dependencies:
   dartz: ^0.10.1
   # Responsive UI - Screen size adaptation
   flutter_screenutil: ^5.9.3
+  shared_preferences: ^2.3.3
 
 dev_dependencies:
   flutter_lints: ^3.0.0

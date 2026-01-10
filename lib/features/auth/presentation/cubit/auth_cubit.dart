@@ -28,7 +28,7 @@ class AuthCubit extends Cubit<AuthState> {
     final either = await repository.getCachedToken();
 
     either.fold(
-          (failure) {
+      (failure) {
         emit(
           state.copyWith(
             status: AuthStatus.errorWithToast,
@@ -36,12 +36,27 @@ class AuthCubit extends Cubit<AuthState> {
           ),
         );
       },
-          (token) {
+      (token) async {
         if (token != null && token.isNotEmpty) {
+          // Token found, try to get user details
+          final userResult = await repository.getCachedUser();
+          String? userName;
+          String? userId;
+
+          userResult.fold(
+            (_) {}, // Ignore cached user error, just proceed with token
+            (user) {
+              userName = user?.name;
+              userId = user?.id;
+            },
+          );
+
           emit(
             state.copyWith(
-              status: AuthStatus.authenticated,
+              status: AuthStatus.authenticatedFromCache,
               token: token,
+              userName: userName,
+              userId: userId,
               clearError: true,
             ),
           );
@@ -49,7 +64,7 @@ class AuthCubit extends Cubit<AuthState> {
           emit(
             state.copyWith(
               status: AuthStatus.unauthenticated,
-              clearToken: true,
+              clearToken: true, // This also clears user details in AuthState
               clearError: true,
             ),
           );
@@ -64,7 +79,7 @@ class AuthCubit extends Cubit<AuthState> {
   }) async {
     emit(
       state.copyWith(
-        status: AuthStatus.loading,
+        status: AuthStatus.loadingLogin,
         clearError: true,
       ),
     );
@@ -72,19 +87,21 @@ class AuthCubit extends Cubit<AuthState> {
     final either = await loginUseCase(email: email, password: password);
 
     either.fold(
-          (failure) {
+      (failure) {
         emit(
           state.copyWith(
-            status: AuthStatus.errorWithToast,
+            status: AuthStatus.errorLogin,
             errorMessage: failure.message,
           ),
         );
       },
-          (session) {
+      (session) {
         emit(
           state.copyWith(
-            status: AuthStatus.authenticated,
+            status: AuthStatus.authenticatedFromLogin,
             token: session.token,
+            userName: session.user?.name,
+            userId: session.user?.id,
             clearError: true,
           ),
         );
@@ -100,7 +117,7 @@ class AuthCubit extends Cubit<AuthState> {
   }) async {
     emit(
       state.copyWith(
-        status: AuthStatus.loading,
+        status: AuthStatus.loadingRegister,
         clearError: true,
       ),
     );
@@ -113,19 +130,21 @@ class AuthCubit extends Cubit<AuthState> {
     );
 
     either.fold(
-          (failure) {
+      (failure) {
         emit(
           state.copyWith(
-            status: AuthStatus.errorWithToast,
+            status: AuthStatus.errorRegister,
             errorMessage: failure.message,
           ),
         );
       },
-          (session) {
+      (session) {
         emit(
           state.copyWith(
-            status: AuthStatus.authenticated,
+            status: AuthStatus.authenticatedFromRegister,
             token: session.token,
+            userName: session.user?.name,
+            userId: session.user?.id,
             clearError: true,
           ),
         );
@@ -137,7 +156,7 @@ class AuthCubit extends Cubit<AuthState> {
     final either = await logoutUseCase();
 
     either.fold(
-          (failure) {
+      (failure) {
         emit(
           state.copyWith(
             status: AuthStatus.errorWithToast,
@@ -145,7 +164,7 @@ class AuthCubit extends Cubit<AuthState> {
           ),
         );
       },
-          (_) {
+      (_) {
         emit(
           state.copyWith(
             status: AuthStatus.unauthenticated,

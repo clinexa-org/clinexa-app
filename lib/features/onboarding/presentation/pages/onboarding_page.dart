@@ -9,12 +9,12 @@ import '../../../../app/router/route_names.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_text_styles.dart';
 import '../../../../app/widgets/primary_button.dart';
-import '../../../../core/storage/onboarding_storage.dart';
+import '../../../../core/storage/cache_helper.dart';
 
 class OnboardingPage extends StatefulWidget {
-  final OnboardingStorage onboardingStorage;
+  final CacheHelper cacheHelper;
 
-  const OnboardingPage({super.key, required this.onboardingStorage});
+  const OnboardingPage({super.key, required this.cacheHelper});
 
   @override
   State<OnboardingPage> createState() => _OnboardingPageState();
@@ -58,7 +58,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   }
 
   Future<void> _skipToLogin() async {
-    await widget.onboardingStorage.markOnboardingAsSeen();
+    await widget.cacheHelper.markOnboardingAsSeen();
     if (mounted) {
       context.go(Routes.login);
     }
@@ -71,7 +71,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
         curve: Curves.easeInOut,
       );
     } else {
-      await widget.onboardingStorage.markOnboardingAsSeen();
+      await widget.cacheHelper.markOnboardingAsSeen();
       if (mounted) {
         context.go(Routes.login);
       }

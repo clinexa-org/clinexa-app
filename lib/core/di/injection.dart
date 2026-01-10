@@ -12,8 +12,8 @@ import '../../features/profile/presentation/cubit/patient_cubit.dart';
 import '../config/env.dart';
 import '../network/api_client.dart';
 import '../network/dio_factory.dart';
-import '../storage/onboarding_storage.dart';
-import '../storage/token_storage.dart';
+import '../presentation/cubit/layout_cubit.dart';
+import '../storage/cache_helper.dart';
 
 import '../../features/auth/data/datasources/auth_local_data_source.dart';
 import '../../features/auth/data/datasources/auth_remote_data_source.dart';
@@ -30,12 +30,11 @@ Future<void> configureDependencies({required bool isProd}) async {
   /// Core
   sl.registerLazySingleton<FlutterSecureStorage>(
       () => const FlutterSecureStorage());
-  sl.registerLazySingleton<TokenStorage>(() => TokenStorage(sl()));
-  sl.registerLazySingleton<OnboardingStorage>(() => OnboardingStorage(sl()));
+  sl.registerLazySingleton<CacheHelper>(() => CacheHelper());
 
   sl.registerLazySingleton<Dio>(() {
     final factory = DioFactory(
-      tokenStorage: sl(),
+      cacheHelper: sl(),
       isProd: isProd,
     );
     return factory.create();
@@ -45,7 +44,7 @@ Future<void> configureDependencies({required bool isProd}) async {
 
   /// Auth
   sl.registerLazySingleton<AuthRemoteDataSource>(
-    () => AuthRemoteDataSource(sl()),
+    () => AuthRemoteDataSourceImpl(sl()),
   );
   sl.registerLazySingleton<AuthLocalDataSource>(
     () => AuthLocalDataSource(sl()),
@@ -85,6 +84,14 @@ Future<void> configureDependencies({required bool isProd}) async {
     () => PatientCubit(
       getMyProfileUseCase: sl(),
       updateProfileUseCase: sl(),
+    ),
+  );
+
+  /// Layout/App
+  sl.registerFactory<LayoutCubit>(
+    () => LayoutCubit(
+      cacheHelper: sl(),
+      authRepository: sl(),
     ),
   );
 }

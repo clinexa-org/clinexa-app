@@ -1,13 +1,22 @@
-import '../../../../core/storage/token_storage.dart';
+import '../../../../core/storage/cache_helper.dart';
 
 class AuthLocalDataSource {
-  final TokenStorage tokenStorage;
+  final CacheHelper cacheHelper;
 
-  const AuthLocalDataSource(this.tokenStorage);
+  const AuthLocalDataSource(this.cacheHelper);
 
-  Future<void> saveToken(String token) => tokenStorage.saveToken(token);
+  Future<void> saveToken(String token) => cacheHelper.saveToken(token);
 
-  Future<String?> readToken() => tokenStorage.readToken();
+  Future<String?> readToken() => cacheHelper.readToken();
 
-  Future<void> clearToken() => tokenStorage.clearToken();
+  Future<void> clearToken() => cacheHelper.clearToken();
+
+  Future<void> saveUser({required String id, required String name}) =>
+      cacheHelper.saveUser(id: id, name: name);
+
+  Future<String?> readUserId() => cacheHelper.readUserId();
+
+  Future<String?> readUserName() => cacheHelper.readUserName();
+
+  Future<void> clearUser() => cacheHelper.clearUser();
 }

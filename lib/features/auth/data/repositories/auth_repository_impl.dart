@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import '../../../../core/errors/dio_error_mapper.dart';
 import '../../../../core/errors/failures.dart';
 import '../../domain/entities/auth_session_entity.dart';
+import '../../domain/entities/user_entity.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_local_data_source.dart';
 import '../datasources/auth_remote_data_source.dart';
@@ -24,14 +25,22 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
   }) async {
     try {
-      final model = await remote.login(email: email, password: password);
+      final response = await remote.login(email: email, password: password);
 
-      if (model.token.isEmpty) {
+      if (!response.success) {
+        return left(Failure(message: response.message));
+      }
+
+      if (response.data == null || response.data!.token.isEmpty) {
         return left(Failure(message: 'Token not found in response.'));
       }
 
-      await local.saveToken(model.token);
-      return right(model.toEntity());
+      await local.saveToken(response.data!.token);
+      await local.saveUser(
+        id: response.data!.user.id,
+        name: response.data!.user.name,
+      );
+      return right(response.data!.toEntity());
     } on DioException catch (e) {
       return left(DioErrorMapper.map(e));
     } catch (_) {
@@ -47,19 +56,27 @@ class AuthRepositoryImpl implements AuthRepository {
     required String role,
   }) async {
     try {
-      final model = await remote.register(
+      final response = await remote.register(
         name: name,
         email: email,
         password: password,
         role: role,
       );
 
-      if (model.token.isEmpty) {
+      if (!response.success) {
+        return left(Failure(message: response.message));
+      }
+
+      if (response.data == null || response.data!.token.isEmpty) {
         return left(Failure(message: 'Token not found in response.'));
       }
 
-      await local.saveToken(model.token);
-      return right(model.toEntity());
+      await local.saveToken(response.data!.token);
+      await local.saveUser(
+        id: response.data!.user.id,
+        name: response.data!.user.name,
+      );
+      return right(response.data!.toEntity());
     } on DioException catch (e) {
       return left(DioErrorMapper.map(e));
     } catch (_) {
@@ -71,6 +88,7 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<Failure, Unit>> logout() async {
     try {
       await local.clearToken();
+      await local.clearUser();
       return right(unit);
     } catch (_) {
       return left(Failure(message: 'Unexpected error.'));
@@ -82,6 +100,27 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final token = await local.readToken();
       return right(token);
+    } catch (_) {
+      return left(Failure(message: 'Unexpected error.'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, UserEntity?>> getCachedUser() async {
+    try {
+      final id = await local.readUserId();
+      final name = await local.readUserName();
+
+      if (id != null && name != null) {
+        return right(UserEntity(
+          id: id,
+          name: name,
+          email: '', // Not cached yet
+          role: '', // Not cached yet
+          isActive: true,
+        ));
+      }
+      return right(null);
     } catch (_) {
       return left(Failure(message: 'Unexpected error.'));
     }

@@ -1,14 +1,15 @@
 import 'package:dio/dio.dart';
-import '../../storage/token_storage.dart';
+import '../../storage/cache_helper.dart';
 
 class AuthInterceptor extends Interceptor {
-  final TokenStorage tokenStorage;
+  final CacheHelper cacheHelper;
 
-  AuthInterceptor(this.tokenStorage);
+  AuthInterceptor(this.cacheHelper);
 
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
-    final token = await tokenStorage.readToken();
+  void onRequest(
+      RequestOptions options, RequestInterceptorHandler handler) async {
+    final token = await cacheHelper.readToken();
     if (token != null && token.isNotEmpty) {
       options.headers['Authorization'] = 'Bearer $token';
     }
