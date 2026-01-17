@@ -13,4 +13,7 @@ class AppAssets {
 
   // Icons
   // Add more icons here as needed
+  // Lottie
+  static const String _lottie = 'assets/lottie';
+  static const String loadingAnimation = '$_lottie/loading.json';
 }

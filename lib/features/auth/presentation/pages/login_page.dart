@@ -12,6 +12,7 @@ import '../../../../app/widgets/custom_text_field.dart';
 import '../../../../app/widgets/primary_button.dart';
 import '../../../../core/utils/toast_helper.dart';
 import '../../../../core/utils/validators.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
 import '../widgets/auth_logo.dart';
@@ -61,7 +62,7 @@ class _LoginPageState extends State<LoginPage> {
         if (state.status == AuthStatus.authenticatedFromLogin) {
           ToastHelper.showSuccess(
             context: context,
-            message: 'Welcome back!',
+            message: 'welcome_back'.tr(context),
           );
           context.go(Routes.home);
         }
@@ -71,8 +72,9 @@ class _LoginPageState extends State<LoginPage> {
         } else if (state.status == AuthStatus.errorLogin) {
           ToastHelper.showError(
             context: context,
-            message: state.errorMessage ?? 'Login failed',
+            message: state.errorMessage ?? 'login_failed'.tr(context),
           );
+          context.read<AuthCubit>().clearToast();
         }
       },
       builder: (context, state) {
@@ -106,7 +108,7 @@ class _LoginPageState extends State<LoginPage> {
 
                     // Subtitle
                     Text(
-                      'Welcome back, please login',
+                      'welcome_back_subtitle'.tr(context),
                       style: AppTextStyles.interRegularw400F14.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -117,8 +119,8 @@ class _LoginPageState extends State<LoginPage> {
                     // Email Input
                     CustomTextField(
                       controller: _emailController,
-                      labelText: 'Email Address',
-                      hintText: 'patient@example.com',
+                      labelText: 'email_address'.tr(context),
+                      hintText: 'email_hint'.tr(context),
                       prefixIcon: const Icon(Iconsax.sms),
                       keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.next,
@@ -131,8 +133,8 @@ class _LoginPageState extends State<LoginPage> {
                     // Password Input
                     CustomTextField(
                       controller: _passwordController,
-                      labelText: 'Password',
-                      hintText: 'Enter your password',
+                      labelText: 'password'.tr(context),
+                      hintText: 'password_hint'.tr(context),
                       isPassword: true, // Built-in visibility toggle
                       prefixIcon: const Icon(Iconsax.lock),
                       textInputAction: TextInputAction.done,
@@ -149,7 +151,7 @@ class _LoginPageState extends State<LoginPage> {
                       child: GestureDetector(
                         onTap: _isLoading ? null : _navigateToForgotPassword,
                         child: Text(
-                          'Forgot Password?',
+                          'forgot_password'.tr(context),
                           style: AppTextStyles.interRegularw400F14.copyWith(
                             color: _isLoading
                                 ? AppColors.textMuted
@@ -163,7 +165,7 @@ class _LoginPageState extends State<LoginPage> {
 
                     // Login Button
                     PrimaryButton(
-                      text: 'Login',
+                      text: 'login'.tr(context),
                       onPressed: _handleLogin,
                       isLoading: _isLoading,
                     ),
@@ -175,7 +177,7 @@ class _LoginPageState extends State<LoginPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Don't have an account? ",
+                          'no_account'.tr(context),
                           style: AppTextStyles.interRegularw400F14.copyWith(
                             color: AppColors.textSecondary,
                           ),
@@ -183,7 +185,7 @@ class _LoginPageState extends State<LoginPage> {
                         GestureDetector(
                           onTap: _isLoading ? null : _navigateToRegister,
                           child: Text(
-                            'Register',
+                            'register'.tr(context),
                             style: AppTextStyles.interSemiBoldw600F14.copyWith(
                               color: _isLoading
                                   ? AppColors.textMuted

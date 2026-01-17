@@ -12,6 +12,7 @@ import '../../../../app/widgets/custom_text_field.dart';
 import '../../../../app/widgets/primary_button.dart';
 import '../../../../core/utils/toast_helper.dart';
 import '../../../../core/utils/validators.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
 import '../widgets/auth_logo.dart';
@@ -61,13 +62,13 @@ class _RegisterPageState extends State<RegisterPage> {
         if (state.status == AuthStatus.authenticatedFromRegister) {
           ToastHelper.showSuccess(
             context: context,
-            message: 'Account created successfully! Welcome to Clinexa.',
+            message: 'account_created'.tr(context),
           );
           context.go(Routes.home);
         } else if (state.status == AuthStatus.errorRegister) {
           ToastHelper.showError(
             context: context,
-            message: state.errorMessage ?? 'Registration failed',
+            message: state.errorMessage ?? 'registration_failed'.tr(context),
           );
         }
       },
@@ -90,7 +91,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                     // Title
                     Text(
-                      'Join Clinexa',
+                      'join_clinexa'.tr(context),
                       style: AppTextStyles.interSemiBoldw600F24.copyWith(
                         color: AppColors.accentLight,
                       ),
@@ -100,7 +101,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                     // Subtitle
                     Text(
-                      'Create your patient account',
+                      'create_account_subtitle'.tr(context),
                       style: AppTextStyles.interRegularw400F14.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -111,8 +112,8 @@ class _RegisterPageState extends State<RegisterPage> {
                     // Full Name Input
                     CustomTextField(
                       controller: _nameController,
-                      labelText: 'Full Name',
-                      hintText: 'e.g. Ahmed Hassan',
+                      labelText: 'full_name'.tr(context),
+                      hintText: 'name_hint'.tr(context),
                       prefixIcon: const Icon(Iconsax.user),
                       textCapitalization: TextCapitalization.words,
                       textInputAction: TextInputAction.next,
@@ -125,8 +126,8 @@ class _RegisterPageState extends State<RegisterPage> {
                     // Email Address Input
                     CustomTextField(
                       controller: _emailController,
-                      labelText: 'Email Address',
-                      hintText: 'e.g. name@email.com',
+                      labelText: 'email_address'.tr(context),
+                      hintText: 'email_hint_example'.tr(context),
                       prefixIcon: const Icon(Iconsax.sms),
                       keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.next,
@@ -139,8 +140,8 @@ class _RegisterPageState extends State<RegisterPage> {
                     // Password Input
                     CustomTextField(
                       controller: _passwordController,
-                      labelText: 'Password',
-                      hintText: 'Create a password',
+                      labelText: 'password'.tr(context),
+                      hintText: 'create_password_hint'.tr(context),
                       isPassword: true, // Built-in visibility toggle
                       prefixIcon: const Icon(Iconsax.lock),
                       textInputAction: TextInputAction.done,
@@ -153,7 +154,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                     // Create Account Button
                     PrimaryButton(
-                      text: 'Create Account',
+                      text: 'create_account_btn'.tr(context),
                       onPressed: _handleRegister,
                       isLoading: _isLoading,
                     ),
@@ -165,7 +166,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Already have an account? ',
+                          'already_have_account'.tr(context),
                           style: AppTextStyles.interRegularw400F14.copyWith(
                             color: AppColors.textSecondary,
                           ),
@@ -173,7 +174,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         GestureDetector(
                           onTap: _isLoading ? null : _navigateToLogin,
                           child: Text(
-                            'Login',
+                            'login'.tr(context),
                             style: AppTextStyles.interSemiBoldw600F14.copyWith(
                               color: _isLoading
                                   ? AppColors.textMuted

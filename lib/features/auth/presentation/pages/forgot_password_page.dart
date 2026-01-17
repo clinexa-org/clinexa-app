@@ -7,9 +7,11 @@ import 'package:iconsax/iconsax.dart';
 import '../../../../app/router/route_names.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_text_styles.dart';
+import '../../../../app/widgets/custom_app_bar.dart';
 import '../../../../app/widgets/custom_text_field.dart';
 import '../../../../app/widgets/primary_button.dart';
 import '../../../../core/utils/validators.dart';
+import '../../../../core/localization/app_localizations.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -43,7 +45,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Reset link sent to ${_emailController.text}',
+              'reset_link_sent'
+                  .tr(context, params: {'email': _emailController.text}),
               style: AppTextStyles.interRegularw400F14,
             ),
             backgroundColor: AppColors.success,
@@ -64,22 +67,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.background,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(
-            Iconsax.arrow_left_2,
-            color: AppColors.textPrimary,
-          ),
-          onPressed: _navigateToLogin,
-        ),
-        title: Text(
-          'Forgot Password',
-          style: AppTextStyles.interSemiBoldw600F18.copyWith(
-            color: AppColors.textPrimary,
-          ),
-        ),
+      appBar: CustomAppBar(
+        title: 'forgot_password_title'.tr(context),
+        onBackPressed: _navigateToLogin,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -93,7 +83,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
                 // Instruction Text
                 Text(
-                  'Enter your email address and we\'ll send you a link to reset your password.',
+                  'forgot_password_instruction'.tr(context),
                   style: AppTextStyles.interRegularw400F14.copyWith(
                     color: AppColors.textSecondary,
                     height: 1.5,
@@ -105,8 +95,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 // Email Input
                 CustomTextField(
                   controller: _emailController,
-                  labelText: 'Email Address',
-                  hintText: 'name@example.com',
+                  labelText: 'email_address'.tr(context),
+                  hintText: 'email_example'.tr(context),
                   prefixIcon: const Icon(Iconsax.sms),
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.done,
@@ -119,7 +109,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
                 // Send Reset Link Button
                 PrimaryButton(
-                  text: 'Send reset link',
+                  text: 'send_reset_link'.tr(context),
                   onPressed: _handleSendResetLink,
                   isLoading: _isLoading,
                 ),
@@ -131,7 +121,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   child: GestureDetector(
                     onTap: _isLoading ? null : _navigateToLogin,
                     child: Text(
-                      'Back to login',
+                      'back_to_login'.tr(context),
                       style: AppTextStyles.interRegularw400F14.copyWith(
                         color: _isLoading
                             ? AppColors.textMuted

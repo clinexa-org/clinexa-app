@@ -1,4 +1,5 @@
 // core/presentation/cubit/layout_cubit.dart
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../app/router/route_names.dart';
@@ -43,4 +44,21 @@ class LayoutCubit extends Cubit<LayoutState> {
       ),
     );
   }
+
+  /// Load saved language from cache
+  Future<void> loadSavedLanguage() async {
+    final langCode = await cacheHelper.getCachedLanguageCode();
+    final locale = Locale(langCode ?? 'en');
+    emit(state.copyWith(locale: locale));
+  }
+
+  /// Change app language
+  Future<void> changeLanguage(String languageCode) async {
+    await cacheHelper.saveUserLang(languageCode);
+    final locale = Locale(languageCode);
+    emit(state.copyWith(locale: locale));
+  }
+
+  /// Check if current language is RTL
+  bool get isRTL => state.isRTL;
 }

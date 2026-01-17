@@ -6,6 +6,7 @@ class UserModel extends BaseModel {
   final String name;
   final String email;
   final String role;
+  final String? avatar;
   final bool isActive;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -15,6 +16,7 @@ class UserModel extends BaseModel {
     required this.name,
     required this.email,
     required this.role,
+    this.avatar,
     required this.isActive,
     required this.createdAt,
     required this.updatedAt,
@@ -25,6 +27,7 @@ class UserModel extends BaseModel {
     String? name,
     String? email,
     String? role,
+    String? avatar,
     bool? isActive,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -34,6 +37,7 @@ class UserModel extends BaseModel {
       name: name ?? this.name,
       email: email ?? this.email,
       role: role ?? this.role,
+      avatar: avatar ?? this.avatar,
       isActive: isActive ?? this.isActive,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -47,6 +51,7 @@ class UserModel extends BaseModel {
       'name': name,
       'email': email,
       'role': role,
+      'avatar': avatar,
       'is_active': isActive,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
@@ -59,6 +64,7 @@ class UserModel extends BaseModel {
       name: map['name'] as String,
       email: map['email'] as String,
       role: map['role'] as String,
+      avatar: map['avatar'] as String?,
       isActive: map['is_active'] as bool? ?? true,
       createdAt: DateTime.parse(map['createdAt'] as String),
       updatedAt: DateTime.parse(map['updatedAt'] as String),
@@ -71,11 +77,12 @@ class UserModel extends BaseModel {
       name: name,
       email: email,
       role: role,
+      avatar: avatar,
       isActive: isActive,
     );
   }
 
   @override
   List<Object?> get props =>
-      [id, name, email, role, isActive, createdAt, updatedAt];
+      [id, name, email, role, avatar, isActive, createdAt, updatedAt];
 }

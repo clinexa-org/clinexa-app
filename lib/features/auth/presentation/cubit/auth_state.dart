@@ -24,6 +24,8 @@ class AuthState extends Equatable {
   final String? token;
   final String? userName;
   final String? userId;
+  final String? role;
+  final String? avatar;
   final String? errorMessage;
 
   const AuthState({
@@ -31,6 +33,8 @@ class AuthState extends Equatable {
     this.token,
     this.userName,
     this.userId,
+    this.role,
+    this.avatar,
     this.errorMessage,
   });
 
@@ -46,6 +50,8 @@ class AuthState extends Equatable {
     String? token,
     String? userName,
     String? userId,
+    String? role,
+    String? avatar,
     String? errorMessage,
     bool clearError = false,
     bool clearToken = false,
@@ -55,10 +61,13 @@ class AuthState extends Equatable {
       token: clearToken ? null : (token ?? this.token),
       userName: clearToken ? null : (userName ?? this.userName),
       userId: clearToken ? null : (userId ?? this.userId),
+      role: clearToken ? null : (role ?? this.role),
+      avatar: clearToken ? null : (avatar ?? this.avatar),
       errorMessage: clearError ? null : errorMessage,
     );
   }
 
   @override
-  List<Object?> get props => [status, token, userName, userId, errorMessage];
+  List<Object?> get props =>
+      [status, token, userName, userId, role, avatar, errorMessage];
 }

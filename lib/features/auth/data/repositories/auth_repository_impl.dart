@@ -39,6 +39,8 @@ class AuthRepositoryImpl implements AuthRepository {
       await local.saveUser(
         id: response.data!.user.id,
         name: response.data!.user.name,
+        role: response.data!.user.role,
+        avatar: response.data!.user.avatar,
       );
       return right(response.data!.toEntity());
     } on DioException catch (e) {
@@ -75,6 +77,8 @@ class AuthRepositoryImpl implements AuthRepository {
       await local.saveUser(
         id: response.data!.user.id,
         name: response.data!.user.name,
+        role: response.data!.user.role,
+        avatar: response.data!.user.avatar,
       );
       return right(response.data!.toEntity());
     } on DioException catch (e) {
@@ -110,13 +114,16 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final id = await local.readUserId();
       final name = await local.readUserName();
+      final role = await local.readUserRole();
+      final avatar = await local.readUserAvatar();
 
       if (id != null && name != null) {
         return right(UserEntity(
           id: id,
           name: name,
           email: '', // Not cached yet
-          role: '', // Not cached yet
+          role: role ?? '',
+          avatar: avatar,
           isActive: true,
         ));
       }

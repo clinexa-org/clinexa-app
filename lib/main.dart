@@ -1,3 +1,5 @@
+import 'package:clinexa_mobile/features/appointments/presentation/cubit/appointments_cubit.dart';
+import 'package:clinexa_mobile/features/prescriptions/presentation/cubit/prescriptions_cubit.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -49,11 +51,12 @@ void main() async {
   final authCubit = sl<AuthCubit>();
   await authCubit.init();
 
-  // 5. Determine Initial Route
+  // 5. Determine Initial Route & Load Language
   String initialRoute = Routes.login;
+  final layoutCubit = sl<LayoutCubit>();
   try {
-    final layoutCubit = sl<LayoutCubit>();
     await layoutCubit.determineInitialRoute();
+    await layoutCubit.loadSavedLanguage();
     initialRoute = layoutCubit.state.initialRoute ?? Routes.login;
   } catch (e) {
     debugPrint('Initial Route Check Failed: $e');
@@ -63,6 +66,7 @@ void main() async {
   final router = AppRouter.createRouter(
     sl<CacheHelper>(),
     initialRoute,
+    navigatorKey,
   );
 
   // 7. Run App
@@ -71,8 +75,17 @@ void main() async {
       providers: [
         BlocProvider<AuthCubit>.value(value: authCubit),
         BlocProvider<PatientCubit>(create: (_) => sl<PatientCubit>()),
+        BlocProvider(
+          create: (context) => sl<AppointmentsCubit>()..getMyAppointments(),
+        ),
+        BlocProvider(
+          create: (context) => sl<PrescriptionsCubit>()..getMyPrescriptions(),
+        ),
       ],
-      child: ClinexaApp(router: router),
+      child: ClinexaApp(
+        router: router,
+        layoutCubit: layoutCubit,
+      ),
     ),
   );
 }

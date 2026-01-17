@@ -1,13 +1,21 @@
-import 'package:clinexa_mobile/core/utils/toast_helper.dart';
+import 'package:clinexa_mobile/features/appointments/presentation/cubit/appointments_cubit.dart';
+import 'package:clinexa_mobile/features/appointments/presentation/pages/appointments_page.dart';
+import 'package:clinexa_mobile/features/booking/presentation/pages/booking_flow_page.dart';
+import 'package:clinexa_mobile/features/prescriptions/presentation/cubit/prescriptions_cubit.dart';
+import 'package:clinexa_mobile/features/prescriptions/presentation/pages/prescriptions_page.dart';
+import 'package:clinexa_mobile/features/profile/presentation/pages/profile_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../widgets/book_appointment_button.dart';
-import '../widgets/clinic_badge.dart';
-import '../widgets/home_bottom_nav_bar.dart';
-import '../widgets/home_header.dart';
-import '../widgets/next_appointment_card.dart';
-import '../widgets/recent_prescriptions_list.dart';
+import 'package:clinexa_mobile/core/di/injection.dart';
+
+import 'package:clinexa_mobile/features/home/presentation/widgets/book_appointment_button.dart';
+import 'package:clinexa_mobile/features/home/presentation/widgets/clinic_badge.dart';
+import 'package:clinexa_mobile/features/home/presentation/widgets/home_bottom_nav_bar.dart';
+import 'package:clinexa_mobile/features/home/presentation/widgets/home_header.dart';
+import 'package:clinexa_mobile/features/home/presentation/widgets/next_appointment_card.dart';
+import 'package:clinexa_mobile/features/home/presentation/widgets/recent_prescriptions_list.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,9 +29,9 @@ class _HomePageState extends State<HomePage> {
 
   final List<Widget> _pages = [
     const _HomeContent(),
-    const Center(child: Text('Bookings Coming Soon')),
-    const Center(child: Text('Meds Coming Soon')),
-    const Center(child: Text('Profile Coming Soon')),
+    const AppointmentsPage(),
+    const PrescriptionsPage(),
+    const ProfilePage(),
   ];
 
   @override
@@ -53,7 +61,6 @@ class _HomeContent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 24.h),
           const HomeHeader(),
           SizedBox(height: 24.h),
           const ClinicBadge(),
@@ -62,9 +69,11 @@ class _HomeContent extends StatelessWidget {
           SizedBox(height: 24.h),
           BookAppointmentButton(
             onPressed: () {
-              ToastHelper.showSuccess(
-                context: context,
-                message: 'Appointment booked successfully',
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const BookingFlowPage(),
+                ),
               );
             },
           ),

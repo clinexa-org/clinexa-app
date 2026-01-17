@@ -11,12 +11,21 @@ class AuthLocalDataSource {
 
   Future<void> clearToken() => cacheHelper.clearToken();
 
-  Future<void> saveUser({required String id, required String name}) =>
-      cacheHelper.saveUser(id: id, name: name);
+  Future<void> saveUser({
+    required String id,
+    required String name,
+    String? role,
+    String? avatar,
+  }) =>
+      cacheHelper.saveUser(id: id, name: name, role: role, avatar: avatar);
 
   Future<String?> readUserId() => cacheHelper.readUserId();
 
   Future<String?> readUserName() => cacheHelper.readUserName();
+
+  Future<String?> readUserRole() => cacheHelper.readUserRole();
+
+  Future<String?> readUserAvatar() => cacheHelper.readUserAvatar();
 
   Future<void> clearUser() => cacheHelper.clearUser();
 }

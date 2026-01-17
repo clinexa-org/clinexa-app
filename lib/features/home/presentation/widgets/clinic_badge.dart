@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax/iconsax.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_text_styles.dart';
+import '../../../../core/localization/app_localizations.dart';
 
 class ClinicBadge extends StatelessWidget {
   const ClinicBadge({super.key});
@@ -22,7 +23,7 @@ class ClinicBadge extends StatelessWidget {
           Icon(Iconsax.hospital, size: 16.sp, color: AppColors.textMuted),
           SizedBox(width: 8.w),
           Text(
-            'Clinexa Clinic • Dr. Ahmed Hassan',
+            'clinic_badge_text'.tr(context),
             style: AppTextStyles.interSemiBoldw600F12.copyWith(
               color: AppColors.textSecondary,
             ),

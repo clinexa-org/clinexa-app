@@ -9,7 +9,28 @@ import '../../features/profile/data/repositories/patient_repository_impl.dart';
 import '../../features/profile/domain/usecases/get_my_profile_usecase.dart';
 import '../../features/profile/domain/usecases/update_profile_usecase.dart';
 import '../../features/profile/presentation/cubit/patient_cubit.dart';
-import '../config/env.dart';
+
+import '../../features/appointments/data/datasources/appointment_remote_data_source.dart';
+import '../../features/appointments/data/repositories/appointments_repository_impl.dart';
+import '../../features/appointments/domain/repositories/appointments_repository.dart';
+import '../../features/appointments/domain/usecases/create_appointment_usecase.dart';
+import '../../features/appointments/domain/usecases/get_my_appointments_usecase.dart';
+import '../../features/appointments/domain/usecases/reschedule_appointment_usecase.dart';
+import '../../features/appointments/presentation/cubit/appointments_cubit.dart';
+
+import '../../features/prescriptions/data/datasources/prescription_remote_data_source.dart';
+import '../../features/prescriptions/data/repositories/prescriptions_repository_impl.dart';
+import '../../features/prescriptions/domain/repositories/prescriptions_repository.dart';
+import '../../features/prescriptions/domain/usecases/get_my_prescriptions_usecase.dart';
+import '../../features/prescriptions/presentation/cubit/prescriptions_cubit.dart';
+
+import '../../features/doctors/data/datasources/doctor_remote_data_source.dart';
+import '../../features/doctors/data/repositories/doctors_repository_impl.dart';
+import '../../features/doctors/domain/repositories/doctors_repository.dart';
+import '../../features/doctors/domain/usecases/get_doctors_usecase.dart';
+import '../../features/doctors/presentation/cubit/doctors_cubit.dart';
+
+import '../../app/app.dart';
 import '../network/api_client.dart';
 import '../network/dio_factory.dart';
 import '../presentation/cubit/layout_cubit.dart';
@@ -36,6 +57,7 @@ Future<void> configureDependencies({required bool isProd}) async {
     final factory = DioFactory(
       cacheHelper: sl(),
       isProd: isProd,
+      onUnauthorized: handleUnauthorized,
     );
     return factory.create();
   });
@@ -70,11 +92,12 @@ Future<void> configureDependencies({required bool isProd}) async {
 
   /// Patient
   sl.registerLazySingleton<PatientRemoteDataSource>(
-    () => PatientRemoteDataSource(sl()),
+    () => PatientRemoteDataSourceImpl(sl()),
   );
 
   sl.registerLazySingleton<PatientRepository>(() => PatientRepositoryImpl(
         remote: sl(),
+        local: sl(),
       ));
 
   sl.registerLazySingleton(() => GetMyProfileUseCase(sl()));
@@ -93,5 +116,53 @@ Future<void> configureDependencies({required bool isProd}) async {
       cacheHelper: sl(),
       authRepository: sl(),
     ),
+  );
+
+  /// Appointments
+  sl.registerLazySingleton<AppointmentRemoteDataSource>(
+    () => AppointmentRemoteDataSourceImpl(sl()),
+  );
+
+  sl.registerLazySingleton<AppointmentsRepository>(
+      () => AppointmentsRepositoryImpl(remoteDataSource: sl()));
+
+  sl.registerLazySingleton(() => GetMyAppointmentsUseCase(sl()));
+  sl.registerLazySingleton(() => CreateAppointmentUseCase(sl()));
+  sl.registerLazySingleton(() => RescheduleAppointmentUseCase(sl()));
+
+  sl.registerFactory<AppointmentsCubit>(
+    () => AppointmentsCubit(
+      getMyAppointmentsUseCase: sl(),
+      createAppointmentUseCase: sl(),
+      rescheduleAppointmentUseCase: sl(),
+    ),
+  );
+
+  /// Prescriptions
+  sl.registerLazySingleton<PrescriptionRemoteDataSource>(
+    () => PrescriptionRemoteDataSourceImpl(sl()),
+  );
+
+  sl.registerLazySingleton<PrescriptionsRepository>(
+      () => PrescriptionsRepositoryImpl(remoteDataSource: sl()));
+
+  sl.registerLazySingleton(() => GetMyPrescriptionsUseCase(sl()));
+
+  sl.registerFactory<PrescriptionsCubit>(
+    () => PrescriptionsCubit(getMyPrescriptionsUseCase: sl()),
+  );
+
+  /// Doctors
+  sl.registerLazySingleton<DoctorRemoteDataSource>(
+    () => DoctorRemoteDataSourceImpl(sl()),
+  );
+
+  sl.registerLazySingleton<DoctorsRepository>(
+      () => DoctorsRepositoryImpl(remoteDataSource: sl()));
+
+  sl.registerLazySingleton(() => GetDoctorsUseCase(sl()));
+
+  sl.registerFactory<DoctorsCubit>(
+    () => DoctorsCubit(getDoctorsUseCase: sl()),
   );
 }

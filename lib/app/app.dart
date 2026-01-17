@@ -1,32 +1,79 @@
 // app/app.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:toastification/toastification.dart';
 
-import 'theme/app_theme.dart';
+import '../core/localization/app_localizations.dart';
+import '../core/presentation/cubit/layout_cubit.dart';
+import '../core/presentation/cubit/layout_state.dart';
+import 'router/route_names.dart';
+
+// Global navigator key for handling navigation from interceptors
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+// Global function to handle unauthorized state
+void handleUnauthorized() {
+  // Navigate to login screen
+  navigatorKey.currentContext?.go(Routes.login);
+}
 
 class ClinexaApp extends StatelessWidget {
   final GoRouter router;
+  final LayoutCubit layoutCubit;
 
-  const ClinexaApp({super.key, required this.router});
+  const ClinexaApp({
+    super.key,
+    required this.router,
+    required this.layoutCubit,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: const Size(375, 812), // iPhone X base design
-      minTextAdapt: true,
-      splitScreenMode: true,
-      builder: (context, child) {
-        return ToastificationWrapper(
-          child: MaterialApp.router(
-            debugShowCheckedModeBanner: false,
-            title: 'Clinexa',
-            theme: AppTheme.darkTheme,
-            routerConfig: router,
-          ),
-        );
-      },
+    return BlocProvider<LayoutCubit>.value(
+      value: layoutCubit,
+      child: ScreenUtilInit(
+        designSize: const Size(375, 812),
+        minTextAdapt: true,
+        splitScreenMode: true,
+        builder: (context, child) {
+          return BlocBuilder<LayoutCubit, LayoutState>(
+            builder: (context, layoutState) {
+              return MaterialApp.router(
+                debugShowCheckedModeBanner: false,
+                title: 'Clinexa',
+                routerConfig: router,
+
+                // Localization
+                locale: layoutState.locale,
+                supportedLocales: const [
+                  Locale('en'),
+                  Locale('ar'),
+                ],
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+
+                theme: ThemeData(
+                  brightness: Brightness.dark,
+                  scaffoldBackgroundColor: const Color(0xFF181A1B),
+                  useMaterial3: true,
+                ),
+                darkTheme: ThemeData(
+                  brightness: Brightness.dark,
+                  scaffoldBackgroundColor: const Color(0xFF181A1B),
+                  useMaterial3: true,
+                ),
+                themeMode: ThemeMode.dark,
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

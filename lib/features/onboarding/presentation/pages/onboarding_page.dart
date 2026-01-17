@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/localization/app_localizations.dart';
 
 import '../../../../app/constants/app_assets.dart';
 import '../../../../app/router/route_names.dart';
@@ -24,26 +25,29 @@ class _OnboardingPageState extends State<OnboardingPage> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
-  final List<OnboardingData> _pages = [
-    OnboardingData(
-      iconPath: AppAssets.onboardingIcon1,
-      title: 'Book appointments easily',
-      description:
-          'Schedule your visit with your doctor in just a few taps — no waiting on hold.',
-    ),
-    OnboardingData(
-      iconPath: AppAssets.onboardingIcon2,
-      title: 'Track your appointments',
-      description:
-          'Stay organized with a clear view of your upcoming visits and history with Dr. Ahmed Hassan.',
-    ),
-    OnboardingData(
-      iconPath: AppAssets.onboardingIcon3,
-      title: 'Your prescriptions on your phone',
-      description:
-          'View your medications, download PDF copies, and easily share them with pharmacies.',
-    ),
-  ];
+  late final List<OnboardingData> _pages;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _pages = [
+      OnboardingData(
+        iconPath: AppAssets.onboardingIcon1,
+        title: 'onboarding_title_1'.tr(context),
+        description: 'onboarding_desc_1'.tr(context),
+      ),
+      OnboardingData(
+        iconPath: AppAssets.onboardingIcon2,
+        title: 'onboarding_title_2'.tr(context),
+        description: 'onboarding_desc_2'.tr(context),
+      ),
+      OnboardingData(
+        iconPath: AppAssets.onboardingIcon3,
+        title: 'onboarding_title_3'.tr(context),
+        description: 'onboarding_desc_3'.tr(context),
+      ),
+    ];
+  }
 
   @override
   void dispose() {
@@ -92,7 +96,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 child: GestureDetector(
                   onTap: _skipToLogin,
                   child: Text(
-                    'Skip',
+                    'btn_skip'.tr(context),
                     style: AppTextStyles.interRegularw400F14
                         .copyWith(color: Colors.white),
                   ),
@@ -156,8 +160,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
             Padding(
               padding: EdgeInsets.only(left: 24.w, right: 24.w, bottom: 32.h),
               child: PrimaryButton(
-                text:
-                    _currentPage == _pages.length - 1 ? 'Get Started' : 'Next',
+                text: _currentPage == _pages.length - 1
+                    ? 'btn_get_started'.tr(context)
+                    : 'btn_next'.tr(context),
                 onPressed: _nextOrGetStarted,
               ),
             ),

@@ -9,10 +9,12 @@ import 'interceptors/retry_interceptor_builder.dart';
 class DioFactory {
   final CacheHelper cacheHelper;
   final bool isProd;
+  final void Function()? onUnauthorized;
 
   DioFactory({
     required this.cacheHelper,
     required this.isProd,
+    this.onUnauthorized,
   });
 
   Dio create() {
@@ -28,7 +30,10 @@ class DioFactory {
       ),
     );
 
-    dio.interceptors.add(AuthInterceptor(cacheHelper));
+    dio.interceptors.add(AuthInterceptor(
+      cacheHelper,
+      onUnauthorized: onUnauthorized,
+    ));
     dio.interceptors.add(buildRetryInterceptor(dio: dio));
 
     if (!isProd) {

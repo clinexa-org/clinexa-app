@@ -4,6 +4,7 @@ import 'package:iconsax/iconsax.dart';
 
 import '../../../../app/widgets/primary_button.dart';
 import '../../../../core/utils/toast_helper.dart';
+import '../../../../core/localization/app_localizations.dart';
 
 class BookAppointmentButton extends StatelessWidget {
   final VoidCallback? onPressed;
@@ -13,13 +14,13 @@ class BookAppointmentButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PrimaryButton(
-      text: 'Book New Appointment',
+      text: 'book_new_appointment'.tr(context),
       icon: Iconsax.add,
       onPressed: onPressed ??
           () {
             ToastHelper.showError(
               context: context,
-              message: 'Appointment booking failed',
+              message: 'booking_failed'.tr(context),
             );
           },
     );

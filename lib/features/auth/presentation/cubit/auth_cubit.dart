@@ -42,12 +42,16 @@ class AuthCubit extends Cubit<AuthState> {
           final userResult = await repository.getCachedUser();
           String? userName;
           String? userId;
+          String? role;
+          String? avatar;
 
           userResult.fold(
             (_) {}, // Ignore cached user error, just proceed with token
             (user) {
               userName = user?.name;
               userId = user?.id;
+              role = user?.role;
+              avatar = user?.avatar;
             },
           );
 
@@ -57,6 +61,8 @@ class AuthCubit extends Cubit<AuthState> {
               token: token,
               userName: userName,
               userId: userId,
+              role: role,
+              avatar: avatar,
               clearError: true,
             ),
           );
@@ -102,6 +108,8 @@ class AuthCubit extends Cubit<AuthState> {
             token: session.token,
             userName: session.user?.name,
             userId: session.user?.id,
+            role: session.user?.role,
+            avatar: session.user?.avatar,
             clearError: true,
           ),
         );
@@ -145,6 +153,8 @@ class AuthCubit extends Cubit<AuthState> {
             token: session.token,
             userName: session.user?.name,
             userId: session.user?.id,
+            role: session.user?.role,
+            avatar: session.user?.avatar,
             clearError: true,
           ),
         );
@@ -180,5 +190,12 @@ class AuthCubit extends Cubit<AuthState> {
     if (state.status == AuthStatus.errorWithToast) {
       emit(state.copyWith(status: AuthStatus.initial, clearError: true));
     }
+  }
+
+  void updateUser({String? name, String? avatar}) {
+    emit(state.copyWith(
+      userName: name,
+      avatar: avatar,
+    ));
   }
 }

@@ -1,4 +1,5 @@
 // features/profile/presentation/cubit/patient_cubit.dart
+import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -45,18 +46,22 @@ class PatientCubit extends Cubit<PatientState> {
   }
 
   Future<void> updateProfile({
+    required String name,
     required int age,
     required String gender,
     required String phone,
     required String address,
+    File? avatar,
   }) async {
     emit(state.copyWith(status: PatientStatus.loading, clearError: true));
 
     final either = await updateProfileUseCase(
+      name: name,
       age: age,
       gender: gender,
       phone: phone,
       address: address,
+      avatar: avatar,
     );
 
     either.fold(

@@ -1,4 +1,5 @@
 // app/widgets/primary_button.dart
+import 'package:clinexa_mobile/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -68,7 +69,7 @@ class PrimaryButton extends StatelessWidget {
                     SizedBox(width: 8.w),
                   ],
                   Text(
-                    text,
+                    text.tr(context),
                     style: AppTextStyles.interSemiBoldw600F16.copyWith(
                       color: textColor ?? Colors.white,
                     ),

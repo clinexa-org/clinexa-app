@@ -1,9 +1,27 @@
 // features/profile/domain/entities/patient_entity.dart
 import 'package:equatable/equatable.dart';
 
+/// User entity with avatar
+class UserEntity extends Equatable {
+  final String? id;
+  final String? name;
+  final String? email;
+  final String? avatar;
+
+  const UserEntity({
+    this.id,
+    this.name,
+    this.email,
+    this.avatar,
+  });
+
+  @override
+  List<Object?> get props => [id, name, email, avatar];
+}
+
 class PatientEntity extends Equatable {
   final String? id;
-  final String? userId;
+  final UserEntity? user; // User with avatar
   final int? age;
   final String? gender;
   final String? phone;
@@ -13,7 +31,7 @@ class PatientEntity extends Equatable {
 
   const PatientEntity({
     this.id,
-    this.userId,
+    this.user,
     this.age,
     this.gender,
     this.phone,
@@ -22,17 +40,23 @@ class PatientEntity extends Equatable {
     this.updatedAt,
   });
 
+  /// Get avatar URL from user
+  String? get avatar => user?.avatar;
+
+  /// Get user name
+  String? get name => user?.name;
+
+  /// Get user email
+  String? get email => user?.email;
+
   bool get isComplete {
-    return age != null &&
-        gender != null &&
-        phone != null &&
-        address != null;
+    return age != null && gender != null && phone != null && address != null;
   }
 
   @override
   List<Object?> get props => [
         id,
-        userId,
+        user,
         age,
         gender,
         phone,

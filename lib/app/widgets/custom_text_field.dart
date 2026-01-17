@@ -30,6 +30,8 @@ class CustomTextField extends StatefulWidget {
   final FocusNode? focusNode;
   final TextCapitalization textCapitalization;
 
+  final EdgeInsetsGeometry? contentPadding;
+
   const CustomTextField({
     super.key,
     this.controller,
@@ -50,6 +52,7 @@ class CustomTextField extends StatefulWidget {
     this.inputFormatters,
     this.focusNode,
     this.textCapitalization = TextCapitalization.none,
+    this.contentPadding,
   });
 
   @override
@@ -100,6 +103,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
           style: AppTextStyles.interRegularw400F14.copyWith(
             color: AppColors.textPrimary,
           ),
+          textAlignVertical: widget.maxLines != null && widget.maxLines! > 1
+              ? TextAlignVertical.top
+              : TextAlignVertical.center,
           decoration: InputDecoration(
             filled: true,
             fillColor:
@@ -109,22 +115,33 @@ class _CustomTextFieldState extends State<CustomTextField> {
               color: AppColors.textMuted,
             ),
             prefixIcon: widget.prefixIcon != null
-                ? IconTheme(
-                    data: IconThemeData(
-                      color: AppColors.textMuted,
-                      size: 20.sp,
+                ? Container(
+                    padding: widget.maxLines != null && widget.maxLines! > 1
+                        ? EdgeInsets.only(
+                            top: 16.h) // Match contentPadding vertical
+                        : null,
+                    child: IconTheme(
+                      data: IconThemeData(
+                        color: AppColors.textMuted,
+                        size: 20.sp,
+                      ),
+                      child: widget.prefixIcon!,
                     ),
-                    child: widget.prefixIcon!,
                   )
                 : null,
+            alignLabelWithHint: widget.maxLines != null && widget.maxLines! > 1,
             suffixIcon: _buildSuffixIcon(),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
-              borderSide: BorderSide.none,
+              borderSide: const BorderSide(
+                color: AppColors.border,
+              ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
-              borderSide: BorderSide.none,
+              borderSide: const BorderSide(
+                color: AppColors.border,
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
@@ -147,10 +164,11 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 width: 1.5,
               ),
             ),
-            contentPadding: EdgeInsets.symmetric(
-              horizontal: 16.w,
-              vertical: 16.h,
-            ),
+            contentPadding: widget.contentPadding ??
+                EdgeInsets.symmetric(
+                  horizontal: 16.w,
+                  vertical: 16.h,
+                ),
             counterText: '', // Hide character counter
           ),
         ),

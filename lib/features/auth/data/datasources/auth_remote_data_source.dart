@@ -1,4 +1,5 @@
 // features/auth/data/datasources/auth_remote_data_source.dart
+import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/models/response_model.dart';
 import '../../../../core/network/api_client.dart';
 import '../models/auth_data_model.dart';
@@ -28,7 +29,7 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
     required String password,
   }) async {
     final response = await apiClient.post(
-      '/auth/login',
+      ApiEndpoints.login,
       data: {
         'email': email,
         'password': password,
@@ -48,7 +49,7 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
     required String role,
   }) async {
     final response = await apiClient.post(
-      '/auth/register',
+      ApiEndpoints.register,
       data: {
         'name': name,
         'email': email,

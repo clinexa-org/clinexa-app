@@ -48,6 +48,8 @@ class CacheHelper {
   static const _keyToken = 'auth_token';
   static const _keyUserId = 'auth_user_id';
   static const _keyUserName = 'auth_user_name';
+  static const _keyUserRole = 'auth_user_role';
+  static const _keyUserAvatar = 'auth_user_avatar';
   static const _keyOnboarding = 'has_seen_onboarding';
 
   // Secure Storage for Sensitive Data
@@ -56,16 +58,31 @@ class CacheHelper {
   Future<String?> readToken() => _secureStorage.read(key: _keyToken);
   Future<void> clearToken() => _secureStorage.delete(key: _keyToken);
 
-  Future<void> saveUser({required String id, required String name}) async {
+  Future<void> saveUser({
+    required String id,
+    required String name,
+    String? role,
+    String? avatar,
+  }) async {
     await _secureStorage.write(key: _keyUserId, value: id);
     await _secureStorage.write(key: _keyUserName, value: name);
+    if (role != null)
+      await _secureStorage.write(key: _keyUserRole, value: role);
+    if (avatar != null) {
+      await _secureStorage.write(key: _keyUserAvatar, value: avatar);
+    }
   }
 
   Future<String?> readUserId() => _secureStorage.read(key: _keyUserId);
   Future<String?> readUserName() => _secureStorage.read(key: _keyUserName);
+  Future<String?> readUserRole() => _secureStorage.read(key: _keyUserRole);
+  Future<String?> readUserAvatar() => _secureStorage.read(key: _keyUserAvatar);
+
   Future<void> clearUser() async {
     await _secureStorage.delete(key: _keyUserId);
     await _secureStorage.delete(key: _keyUserName);
+    await _secureStorage.delete(key: _keyUserRole);
+    await _secureStorage.delete(key: _keyUserAvatar);
   }
 
   // Shared Preferences for Non-Sensitive Data

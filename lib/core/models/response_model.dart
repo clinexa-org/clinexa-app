@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 
 import 'base_model.dart';
 
-class ResponseModel<T extends BaseModel> extends Equatable {
+class ResponseModel<T> extends Equatable {
   final bool success;
   final String message;
   final T? data;
@@ -30,7 +30,7 @@ class ResponseModel<T extends BaseModel> extends Equatable {
     return <String, dynamic>{
       'success': success,
       'message': message,
-      'data': data?.toMap(),
+      'data': (data is BaseModel) ? (data as BaseModel).toMap() : data,
     };
   }
 
