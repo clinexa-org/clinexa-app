@@ -66,7 +66,6 @@ class _HomeContent extends StatelessWidget {
           const ClinicBadge(),
           SizedBox(height: 32.h),
           const NextAppointmentCard(),
-          SizedBox(height: 24.h),
           BookAppointmentButton(
             onPressed: () {
               Navigator.push(

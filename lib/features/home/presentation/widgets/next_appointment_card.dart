@@ -22,6 +22,10 @@ class NextAppointmentCard extends StatelessWidget {
           return _buildShimmer(context);
         }
 
+        if (state.status == AppointmentsStatus.failure) {
+          return const SizedBox.shrink();
+        }
+
         final upcoming = state.appointments
             .where(
                 (apt) => apt.status == 'pending' || apt.status == 'confirmed')
@@ -177,6 +181,7 @@ class NextAppointmentCard extends StatelessWidget {
                 ],
               ),
             ),
+            SizedBox(height: 24.h),
           ],
         );
       },
