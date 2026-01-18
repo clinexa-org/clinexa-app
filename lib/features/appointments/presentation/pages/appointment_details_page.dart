@@ -325,31 +325,33 @@ class AppointmentDetailsPage extends StatelessWidget {
       confirmText: 'btn_confirm_cancel'.tr(context),
       cancelText: 'btn_keep_it'.tr(context),
       isDanger: true,
-      onConfirm: () {
-        context.read<AppointmentsCubit>().cancelAppointment(
-              id: appointment.id,
-            );
-        // Listen for result
+      autoCloseOnConfirm: false,
+      onConfirmAsync: () async {
         final cubit = context.read<AppointmentsCubit>();
-        cubit.stream
-            .firstWhere((state) =>
-                state.status == AppointmentsStatus.success ||
-                state.status == AppointmentsStatus.failure)
-            .then((state) {
-          if (!context.mounted) return;
-          if (state.status == AppointmentsStatus.success) {
-            Navigator.pop(context);
-            ToastHelper.showSuccess(
-              context: context,
-              message: 'msg_appointment_cancelled'.tr(context),
-            );
-          } else if (state.status == AppointmentsStatus.failure) {
-            ToastHelper.showError(
-              context: context,
-              message: state.errorMessage ?? 'msg_cancel_error'.tr(context),
-            );
-          }
-        });
+        cubit.cancelAppointment(id: appointment.id);
+
+        // Wait for result
+        final state = await cubit.stream.firstWhere((state) =>
+            state.status == AppointmentsStatus.success ||
+            state.status == AppointmentsStatus.failure);
+
+        if (!context.mounted) return;
+
+        // Close dialog first
+        Navigator.pop(context);
+
+        if (state.status == AppointmentsStatus.success) {
+          Navigator.pop(context); // Close details page
+          ToastHelper.showSuccess(
+            context: context,
+            message: 'msg_appointment_cancelled'.tr(context),
+          );
+        } else if (state.status == AppointmentsStatus.failure) {
+          ToastHelper.showError(
+            context: context,
+            message: state.errorMessage ?? 'msg_cancel_error'.tr(context),
+          );
+        }
       },
     );
   }
