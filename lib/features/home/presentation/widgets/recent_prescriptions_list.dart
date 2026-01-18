@@ -52,26 +52,18 @@ class RecentPrescriptionsList extends StatelessWidget {
               return _buildShimmer(context);
             }
             if (state.status == PrescriptionsStatus.failure) {
-              return Text('Error loading prescriptions',
-                  style: TextStyle(color: Colors.red));
+              // If profile is missing (new user), show empty state instead of error
+              if (state.errorMessage != null &&
+                  (state.errorMessage!.contains('Profile not found') ||
+                      state.errorMessage!
+                          .contains('Patient profile not found'))) {
+                return _buildEmptyState(context);
+              }
+              return _buildErrorState(context, state.errorMessage);
             }
 
             if (state.prescriptions.isEmpty) {
-              return Container(
-                width: double.infinity,
-                padding: EdgeInsets.all(16.w),
-                decoration: BoxDecoration(
-                  border: Border.all(color: AppColors.border),
-                  borderRadius: BorderRadius.circular(16.r),
-                  color: AppColors.surface.withOpacity(0.5),
-                ),
-                child: Text(
-                  'No prescriptions found',
-                  textAlign: TextAlign.center,
-                  style: AppTextStyles.interRegularw400F14
-                      .copyWith(color: AppColors.textMuted),
-                ),
-              );
+              return _buildEmptyState(context);
             }
 
             // Show only top 3
@@ -152,6 +144,76 @@ class RecentPrescriptionsList extends StatelessWidget {
           },
         ),
       ],
+    );
+  }
+
+  Widget _buildEmptyState(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(24.w),
+      decoration: BoxDecoration(
+        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(16.r),
+        color: AppColors.surface.withOpacity(0.5),
+      ),
+      child: Column(
+        children: [
+          Icon(
+            Iconsax.document_text,
+            size: 32.sp,
+            color: AppColors.textMuted,
+          ),
+          SizedBox(height: 8.h),
+          Text(
+            'empty_prescriptions_title'.tr(context),
+            textAlign: TextAlign.center,
+            style: AppTextStyles.interMediumw500F14
+                .copyWith(color: AppColors.textSecondary),
+          ),
+          SizedBox(height: 4.h),
+          Text(
+            'empty_prescriptions_msg'.tr(context),
+            textAlign: TextAlign.center,
+            style: AppTextStyles.interRegularw400F12
+                .copyWith(color: AppColors.textMuted),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState(BuildContext context, String? message) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(16.w),
+      decoration: BoxDecoration(
+        border: Border.all(color: AppColors.error.withOpacity(0.5)),
+        borderRadius: BorderRadius.circular(16.r),
+        color: AppColors.error.withOpacity(0.1),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Iconsax.warning_2,
+            size: 24.sp,
+            color: AppColors.error,
+          ),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: Text(
+              message ?? 'Error loading data',
+              style: AppTextStyles.interRegularw400F14
+                  .copyWith(color: AppColors.error),
+            ),
+          ),
+          IconButton(
+            icon: Icon(Iconsax.refresh, color: AppColors.error, size: 20.sp),
+            onPressed: () {
+              context.read<PrescriptionsCubit>().getMyPrescriptions();
+            },
+          ),
+        ],
+      ),
     );
   }
 
