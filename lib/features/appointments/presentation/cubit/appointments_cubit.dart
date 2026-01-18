@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../data/models/appointment_model.dart';
 import '../../domain/usecases/cancel_appointment_usecase.dart';
 import '../../domain/usecases/create_appointment_usecase.dart';
 import '../../domain/usecases/get_my_appointments_usecase.dart';
@@ -110,10 +111,27 @@ class AppointmentsCubit extends Cubit<AppointmentsState> {
         status: AppointmentsStatus.failure,
         errorMessage: failure.message,
       )),
-      (cancelledAppointment) {
-        // Update the appointment in the list with new status
+      (_) {
+        // Update the appointment status locally using existing data
+        // (API returns flat structure that can't be fully parsed)
         final appointments = state.appointments.map((a) {
-          return a.id == cancelledAppointment.id ? cancelledAppointment : a;
+          if (a.id == id) {
+            return AppointmentModel(
+              id: a.id,
+              date: a.date,
+              time: a.time,
+              reason: a.reason,
+              status: 'cancelled',
+              doctorName: a.doctorName,
+              doctorSpecialty: a.doctorSpecialty,
+              doctorImage: a.doctorImage,
+              clinicName: a.clinicName,
+              clinicAddress: a.clinicAddress,
+              latitude: a.latitude,
+              longitude: a.longitude,
+            );
+          }
+          return a;
         }).toList();
 
         emit(state.copyWith(
