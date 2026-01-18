@@ -220,6 +220,57 @@ class AppDialog extends StatefulWidget {
     );
   }
 
+  /// Show a loading dialog (no buttons, just spinner)
+  /// Call Navigator.pop() to dismiss when done
+  static Future<void> loading({
+    required BuildContext context,
+    String? message,
+  }) {
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Colors.black54,
+      builder: (context) => PopScope(
+        canPop: false,
+        child: Dialog(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          child: Container(
+            padding: EdgeInsets.all(24.w),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(16.r),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  width: 40.w,
+                  height: 40.w,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 3,
+                    color: AppColors.primary,
+                  ),
+                ),
+                if (message != null) ...[
+                  SizedBox(height: 16.h),
+                  Text(
+                    message,
+                    style: AppTextStyles.interMediumw500F14.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   State<AppDialog> createState() => _AppDialogState();
 }

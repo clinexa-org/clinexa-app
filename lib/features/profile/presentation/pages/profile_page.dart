@@ -8,6 +8,7 @@ import 'package:iconsax/iconsax.dart';
 import '../../../../app/router/route_names.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_text_styles.dart';
+import '../../../../app/widgets/app_dialog.dart';
 import '../../../../core/utils/language_manager.dart';
 import '../../../../core/utils/toast_helper.dart';
 import '../../../../core/presentation/cubit/layout_cubit.dart';
@@ -107,94 +108,34 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _handleLogout() {
-    showDialog(
+    AppDialog.confirm(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        title: Text(
-          'log_out_title'.tr(context),
-          style: AppTextStyles.interSemiBoldw600F18.copyWith(
-            color: AppColors.textPrimary,
-          ),
-        ),
-        content: Text(
-          'log_out_confirmation'.tr(context),
-          style: AppTextStyles.interRegularw400F14.copyWith(
-            color: AppColors.textSecondary,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => context.pop(),
-            child: Text(
-              'cancel'.tr(context),
-              style: AppTextStyles.interRegularw400F14.copyWith(
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              context.pop();
-              context.read<AuthCubit>().logout();
-              context.go(Routes.login);
-            },
-            child: Text(
-              'log_out_title'.tr(context),
-              style: AppTextStyles.interSemiBoldw600F14.copyWith(
-                color: AppColors.error,
-              ),
-            ),
-          ),
-        ],
-      ),
+      title: 'log_out_title'.tr(context),
+      message: 'log_out_confirmation'.tr(context),
+      confirmText: 'log_out_title'.tr(context),
+      cancelText: 'cancel'.tr(context),
+      isDanger: true,
+      onConfirm: () {
+        context.read<AuthCubit>().logout();
+        context.go(Routes.login);
+      },
     );
   }
 
   void _handleDeleteAccount() {
-    showDialog(
+    AppDialog.confirm(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        title: Text(
-          'delete_account'.tr(context),
-          style: AppTextStyles.interSemiBoldw600F18.copyWith(
-            color: AppColors.error,
-          ),
-        ),
-        content: Text(
-          'delete_account_confirmation'.tr(context),
-          style: AppTextStyles.interRegularw400F14.copyWith(
-            color: AppColors.textSecondary,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => context.pop(),
-            child: Text(
-              'cancel'.tr(context),
-              style: AppTextStyles.interRegularw400F14.copyWith(
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              context.pop();
-              ToastHelper.showError(
-                context: context,
-                message: 'delete_account_not_implemented'.tr(context),
-              );
-            },
-            child: Text(
-              'delete'.tr(context),
-              style: AppTextStyles.interSemiBoldw600F14.copyWith(
-                color: AppColors.error,
-              ),
-            ),
-          ),
-        ],
-      ),
+      title: 'delete_account'.tr(context),
+      message: 'delete_account_confirmation'.tr(context),
+      confirmText: 'delete'.tr(context),
+      cancelText: 'cancel'.tr(context),
+      isDanger: true,
+      onConfirm: () {
+        ToastHelper.showError(
+          context: context,
+          message: 'delete_account_not_implemented'.tr(context),
+        );
+      },
     );
   }
 

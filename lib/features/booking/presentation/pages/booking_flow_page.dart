@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../app/theme/app_colors.dart';
+import '../../../../app/widgets/app_dialog.dart';
 import '../../../../app/widgets/custom_app_bar.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../widgets/booking_confirmation_step.dart';
@@ -73,12 +74,7 @@ class _BookingFlowPageState extends State<BookingFlowPage> {
             message: state.errorMessage ?? 'msg_appointment_error'.tr(context),
           );
         } else if (state.status == AppointmentsStatus.loading) {
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (context) =>
-                const Center(child: CircularProgressIndicator()),
-          );
+          AppDialog.loading(context: context);
         }
       },
       child: Scaffold(
