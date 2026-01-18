@@ -26,11 +26,15 @@ class PatientRepositoryImpl implements PatientRepository {
       final response = await remote.getMyProfile();
       if (response.success && response.data != null) {
         final patient = response.data!.patient;
+        if (patient == null) {
+          return left(Failure(message: 'Profile not found'));
+        }
+
         if (patient.user != null) {
           await local.saveUser(
-            id: patient.user!.id!,
-            name: patient.user!.name!,
-            avatar: patient.user!.avatar,
+            id: patient.user?.id ?? '',
+            name: patient.user?.name ?? '',
+            avatar: patient.user?.avatar,
           );
         }
         return right(patient.toEntity());
@@ -66,11 +70,16 @@ class PatientRepositoryImpl implements PatientRepository {
       );
       if (response.success && response.data != null) {
         final patient = response.data!.patient;
+        if (patient == null) {
+          return left(
+              Failure(message: 'Profile update failed: No data returned'));
+        }
+
         if (patient.user != null) {
           await local.saveUser(
-            id: patient.user!.id!,
-            name: patient.user!.name!,
-            avatar: patient.user!.avatar,
+            id: patient.user?.id ?? '',
+            name: patient.user?.name ?? '',
+            avatar: patient.user?.avatar,
           );
         }
         return right(patient.toEntity());

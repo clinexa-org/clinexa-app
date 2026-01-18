@@ -4,19 +4,21 @@ import '../../../../core/models/base_model.dart';
 import '../../domain/entities/patient_entity.dart';
 
 class PatientDataModel extends BaseModel {
-  final PatientModel patient;
+  final PatientModel? patient;
 
-  const PatientDataModel({required this.patient});
+  const PatientDataModel({this.patient});
 
   factory PatientDataModel.fromMap(Map<String, dynamic> map) {
     return PatientDataModel(
-      patient: PatientModel.fromJson(map['patient'] as Map<String, dynamic>),
+      patient: map['patient'] != null
+          ? PatientModel.fromJson(map['patient'] as Map<String, dynamic>)
+          : null,
     );
   }
 
   @override
   Map<String, dynamic> toMap() {
-    return {'patient': patient.toJson()};
+    return {'patient': patient?.toJson()};
   }
 
   @override
