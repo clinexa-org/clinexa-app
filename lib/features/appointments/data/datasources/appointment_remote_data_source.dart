@@ -18,7 +18,7 @@ abstract class AppointmentRemoteDataSource {
     required String time,
   });
 
-  Future<ResponseModel<AppointmentModel>> cancelAppointment({
+  Future<ResponseModel<bool>> cancelAppointment({
     required String id,
   });
 }
@@ -86,7 +86,7 @@ class AppointmentRemoteDataSourceImpl implements AppointmentRemoteDataSource {
   }
 
   @override
-  Future<ResponseModel<AppointmentModel>> cancelAppointment({
+  Future<ResponseModel<bool>> cancelAppointment({
     required String id,
   }) async {
     final response = await apiClient.patch(
@@ -95,7 +95,7 @@ class AppointmentRemoteDataSourceImpl implements AppointmentRemoteDataSource {
 
     return ResponseModel.fromMap(
       response.data,
-      (data) => AppointmentModel.fromJson(data['appointment']),
+      (data) => true, // Just return success, don't parse flat response
     );
   }
 }

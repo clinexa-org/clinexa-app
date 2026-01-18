@@ -79,13 +79,13 @@ class AppointmentsRepositoryImpl implements AppointmentsRepository {
   }
 
   @override
-  Future<Either<Failure, AppointmentEntity>> cancelAppointment({
+  Future<Either<Failure, bool>> cancelAppointment({
     required String id,
   }) async {
     try {
       final response = await remoteDataSource.cancelAppointment(id: id);
-      if (response.success && response.data != null) {
-        return Right(response.data!);
+      if (response.success && response.data == true) {
+        return const Right(true);
       } else {
         return Left(Failure(message: response.message));
       }
