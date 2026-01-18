@@ -77,4 +77,22 @@ class AppointmentsRepositoryImpl implements AppointmentsRepository {
       return Left(Failure(message: e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, AppointmentEntity>> cancelAppointment({
+    required String id,
+  }) async {
+    try {
+      final response = await remoteDataSource.cancelAppointment(id: id);
+      if (response.success && response.data != null) {
+        return Right(response.data!);
+      } else {
+        return Left(Failure(message: response.message));
+      }
+    } on DioException catch (e) {
+      return Left(DioErrorMapper.map(e));
+    } catch (e) {
+      return Left(Failure(message: e.toString()));
+    }
+  }
 }

@@ -16,4 +16,8 @@ abstract class AppointmentsRepository {
     required String date,
     required String time,
   });
+
+  Future<Either<Failure, AppointmentEntity>> cancelAppointment({
+    required String id,
+  });
 }

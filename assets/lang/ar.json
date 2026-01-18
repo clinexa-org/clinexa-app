@@ -246,5 +246,7 @@
   "month_short_dec": "ديسمبر",
   "btn_confirm_reschedule": "تأكيد إعادة الجدولة",
   "msg_reschedule_success": "تم إعادة الجدولة بنجاح",
-  "msg_reschedule_error": "فشل إعادة الجدولة"
+  "msg_reschedule_error": "فشل إعادة الجدولة",
+  "msg_appointment_cancelled": "تم إلغاء الموعد بنجاح",
+  "msg_cancel_error": "فشل إلغاء الموعد"
 }

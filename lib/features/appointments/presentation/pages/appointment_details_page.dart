@@ -7,10 +7,12 @@ import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_text_styles.dart';
 import '../../../../app/widgets/custom_app_bar.dart';
 import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/utils/toast_helper.dart';
 import '../widgets/appointment_card.dart';
 import '../widgets/reschedule_bottom_sheet.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../appointments/presentation/cubit/appointments_cubit.dart';
+import '../../../appointments/presentation/cubit/appointments_state.dart';
 import '../../domain/entities/appointment_entity.dart';
 
 class AppointmentDetailsPage extends StatelessWidget {
@@ -317,7 +319,7 @@ class AppointmentDetailsPage extends StatelessWidget {
   void _showCancelDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.r),
@@ -336,7 +338,7 @@ class AppointmentDetailsPage extends StatelessWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: Text(
               'btn_keep_it'.tr(context),
               style: AppTextStyles.interMediumw500F14.copyWith(
@@ -344,16 +346,34 @@ class AppointmentDetailsPage extends StatelessWidget {
               ),
             ),
           ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context);
-              // TODO: Call cancel API
+          BlocListener<AppointmentsCubit, AppointmentsState>(
+            listener: (ctx, state) {
+              if (state.status == AppointmentsStatus.success) {
+                Navigator.pop(dialogContext); // Close dialog
+                Navigator.pop(context); // Close details page
+                ToastHelper.showSuccess(
+                  context: context,
+                  message: 'msg_appointment_cancelled'.tr(context),
+                );
+              } else if (state.status == AppointmentsStatus.failure) {
+                Navigator.pop(dialogContext);
+                ToastHelper.showError(
+                  context: context,
+                  message: state.errorMessage ?? 'msg_cancel_error'.tr(context),
+                );
+              }
             },
-            child: Text(
-              'btn_confirm_cancel'.tr(context),
-              style: AppTextStyles.interSemiBoldw600F14.copyWith(
-                color: AppColors.error,
+            child: TextButton(
+              onPressed: () {
+                context.read<AppointmentsCubit>().cancelAppointment(
+                      id: appointment.id,
+                    );
+              },
+              child: Text(
+                'btn_confirm_cancel'.tr(context),
+                style: AppTextStyles.interSemiBoldw600F14.copyWith(
+                  color: AppColors.error,
+                ),
               ),
             ),
           ),

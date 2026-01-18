@@ -17,6 +17,10 @@ abstract class AppointmentRemoteDataSource {
     required String date,
     required String time,
   });
+
+  Future<ResponseModel<AppointmentModel>> cancelAppointment({
+    required String id,
+  });
 }
 
 class AppointmentRemoteDataSourceImpl implements AppointmentRemoteDataSource {
@@ -73,6 +77,20 @@ class AppointmentRemoteDataSourceImpl implements AppointmentRemoteDataSource {
         'date': date,
         'time': time,
       },
+    );
+
+    return ResponseModel.fromMap(
+      response.data,
+      (data) => AppointmentModel.fromJson(data['appointment']),
+    );
+  }
+
+  @override
+  Future<ResponseModel<AppointmentModel>> cancelAppointment({
+    required String id,
+  }) async {
+    final response = await apiClient.patch(
+      ApiEndpoints.appointmentCancel(id),
     );
 
     return ResponseModel.fromMap(

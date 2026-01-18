@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../domain/usecases/cancel_appointment_usecase.dart';
 import '../../domain/usecases/create_appointment_usecase.dart';
 import '../../domain/usecases/get_my_appointments_usecase.dart';
 import '../../domain/usecases/reschedule_appointment_usecase.dart';
@@ -8,11 +9,13 @@ class AppointmentsCubit extends Cubit<AppointmentsState> {
   final GetMyAppointmentsUseCase getMyAppointmentsUseCase;
   final CreateAppointmentUseCase createAppointmentUseCase;
   final RescheduleAppointmentUseCase rescheduleAppointmentUseCase;
+  final CancelAppointmentUseCase cancelAppointmentUseCase;
 
   AppointmentsCubit({
     required this.getMyAppointmentsUseCase,
     required this.createAppointmentUseCase,
     required this.rescheduleAppointmentUseCase,
+    required this.cancelAppointmentUseCase,
   }) : super(const AppointmentsState());
 
   Future<void> getMyAppointments() async {
@@ -87,6 +90,30 @@ class AppointmentsCubit extends Cubit<AppointmentsState> {
       (updatedAppointment) {
         final appointments = state.appointments.map((a) {
           return a.id == updatedAppointment.id ? updatedAppointment : a;
+        }).toList();
+
+        emit(state.copyWith(
+          status: AppointmentsStatus.success,
+          appointments: appointments,
+        ));
+      },
+    );
+  }
+
+  Future<void> cancelAppointment({required String id}) async {
+    emit(state.copyWith(status: AppointmentsStatus.loading));
+
+    final result = await cancelAppointmentUseCase(id: id);
+
+    result.fold(
+      (failure) => emit(state.copyWith(
+        status: AppointmentsStatus.failure,
+        errorMessage: failure.message,
+      )),
+      (cancelledAppointment) {
+        // Update the appointment in the list with new status
+        final appointments = state.appointments.map((a) {
+          return a.id == cancelledAppointment.id ? cancelledAppointment : a;
         }).toList();
 
         emit(state.copyWith(

@@ -263,5 +263,7 @@
   "month_short_dec": "Dec",
   "btn_confirm_reschedule": "Confirm Reschedule",
   "msg_reschedule_success": "Appointment rescheduled successfully",
-  "msg_reschedule_error": "Failed to reschedule appointment"
+  "msg_reschedule_error": "Failed to reschedule appointment",
+  "msg_appointment_cancelled": "Appointment cancelled successfully",
+  "msg_cancel_error": "Failed to cancel appointment"
 }
