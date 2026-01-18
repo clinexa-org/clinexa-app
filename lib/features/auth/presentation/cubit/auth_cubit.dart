@@ -3,9 +3,11 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../domain/repositories/auth_repository.dart';
+import '../../domain/usecases/forgot_password_usecase.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/logout_usecase.dart';
 import '../../domain/usecases/register_usecase.dart';
+import '../../domain/usecases/reset_password_usecase.dart';
 import 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
@@ -13,12 +15,16 @@ class AuthCubit extends Cubit<AuthState> {
   final LoginUseCase loginUseCase;
   final RegisterUseCase registerUseCase;
   final LogoutUseCase logoutUseCase;
+  final ForgotPasswordUseCase forgotPasswordUseCase;
+  final ResetPasswordUseCase resetPasswordUseCase;
 
   AuthCubit({
     required this.repository,
     required this.loginUseCase,
     required this.registerUseCase,
     required this.logoutUseCase,
+    required this.forgotPasswordUseCase,
+    required this.resetPasswordUseCase,
   }) : super(const AuthState());
 
   static AuthCubit get(BuildContext context, {bool listen = false}) =>
@@ -197,5 +203,61 @@ class AuthCubit extends Cubit<AuthState> {
       userName: name,
       avatar: avatar,
     ));
+  }
+
+  Future<void> forgotPassword({required String email}) async {
+    emit(state.copyWith(
+      status: AuthStatus.loadingForgotPassword,
+      clearError: true,
+    ));
+
+    final either = await forgotPasswordUseCase(email: email);
+
+    either.fold(
+      (failure) {
+        emit(state.copyWith(
+          status: AuthStatus.errorForgotPassword,
+          errorMessage: failure.message,
+        ));
+      },
+      (expiresIn) {
+        emit(state.copyWith(
+          status: AuthStatus.forgotPasswordSuccess,
+          clearError: true,
+        ));
+      },
+    );
+  }
+
+  Future<void> resetPassword({
+    required String email,
+    required String otp,
+    required String newPassword,
+  }) async {
+    emit(state.copyWith(
+      status: AuthStatus.loadingResetPassword,
+      clearError: true,
+    ));
+
+    final either = await resetPasswordUseCase(
+      email: email,
+      otp: otp,
+      newPassword: newPassword,
+    );
+
+    either.fold(
+      (failure) {
+        emit(state.copyWith(
+          status: AuthStatus.errorResetPassword,
+          errorMessage: failure.message,
+        ));
+      },
+      (_) {
+        emit(state.copyWith(
+          status: AuthStatus.resetPasswordSuccess,
+          clearError: true,
+        ));
+      },
+    );
   }
 }

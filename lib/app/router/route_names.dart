@@ -4,6 +4,7 @@ abstract class Routes {
   static const login = '/login';
   static const register = '/register';
   static const forgotPassword = '/forgot-password';
+  static const resetPassword = '/reset-password';
   static const home = '/home';
   static const profile = '/profile';
   static const editProfile = '/profile/edit';
@@ -15,6 +16,7 @@ abstract class Routes {
   static const loginName = 'login';
   static const registerName = 'register';
   static const forgotPasswordName = 'forgot-password';
+  static const resetPasswordName = 'reset-password';
   static const homeName = 'home';
   static const profileName = 'profile';
   static const editProfileName = 'edit-profile';

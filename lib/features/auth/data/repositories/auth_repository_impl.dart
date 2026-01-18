@@ -132,4 +132,48 @@ class AuthRepositoryImpl implements AuthRepository {
       return left(Failure(message: 'Unexpected error.'));
     }
   }
+
+  @override
+  Future<Either<Failure, int>> forgotPassword({
+    required String email,
+  }) async {
+    try {
+      final response = await remote.forgotPassword(email: email);
+
+      if (!response.success) {
+        return left(Failure(message: response.message));
+      }
+
+      return right(response.data ?? 600);
+    } on DioException catch (e) {
+      return left(DioErrorMapper.map(e));
+    } catch (_) {
+      return left(Failure(message: 'Unexpected error.'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> resetPassword({
+    required String email,
+    required String otp,
+    required String newPassword,
+  }) async {
+    try {
+      final response = await remote.resetPassword(
+        email: email,
+        otp: otp,
+        newPassword: newPassword,
+      );
+
+      if (!response.success) {
+        return left(Failure(message: response.message));
+      }
+
+      return right(unit);
+    } on DioException catch (e) {
+      return left(DioErrorMapper.map(e));
+    } catch (_) {
+      return left(Failure(message: 'Unexpected error.'));
+    }
+  }
 }

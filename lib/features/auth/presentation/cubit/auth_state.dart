@@ -17,6 +17,14 @@ enum AuthStatus {
   loadingRegister,
   authenticatedFromRegister,
   errorRegister,
+  // Forgot password states
+  loadingForgotPassword,
+  forgotPasswordSuccess,
+  errorForgotPassword,
+  // Reset password states
+  loadingResetPassword,
+  resetPasswordSuccess,
+  errorResetPassword,
 }
 
 class AuthState extends Equatable {

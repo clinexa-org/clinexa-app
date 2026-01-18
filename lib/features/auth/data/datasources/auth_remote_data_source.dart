@@ -16,6 +16,16 @@ abstract class AuthRemoteDataSource {
     required String password,
     required String role,
   });
+
+  Future<ResponseModel<int>> forgotPassword({
+    required String email,
+  });
+
+  Future<ResponseModel<bool>> resetPassword({
+    required String email,
+    required String otp,
+    required String newPassword,
+  });
 }
 
 class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
@@ -61,6 +71,42 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
     return ResponseModel.fromMap(
       response.data,
       (data) => AuthDataModel.fromMap(data),
+    );
+  }
+
+  @override
+  Future<ResponseModel<int>> forgotPassword({
+    required String email,
+  }) async {
+    final response = await apiClient.post(
+      ApiEndpoints.forgotPassword,
+      data: {'email': email},
+    );
+
+    return ResponseModel.fromMap(
+      response.data,
+      (data) => data['expiresIn'] as int? ?? 600,
+    );
+  }
+
+  @override
+  Future<ResponseModel<bool>> resetPassword({
+    required String email,
+    required String otp,
+    required String newPassword,
+  }) async {
+    final response = await apiClient.post(
+      ApiEndpoints.resetPassword,
+      data: {
+        'email': email,
+        'otp': otp,
+        'newPassword': newPassword,
+      },
+    );
+
+    return ResponseModel.fromMap(
+      response.data,
+      (data) => true,
     );
   }
 }

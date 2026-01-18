@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/storage/cache_helper.dart';
 import '../../features/auth/presentation/pages/forgot_password_page.dart';
+import '../../features/auth/presentation/pages/reset_password_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
@@ -40,6 +41,14 @@ class AppRouter {
           path: Routes.forgotPassword,
           name: Routes.forgotPasswordName,
           builder: (context, state) => const ForgotPasswordPage(),
+        ),
+        GoRoute(
+          path: Routes.resetPassword,
+          name: Routes.resetPasswordName,
+          builder: (context, state) {
+            final email = state.extra as String? ?? '';
+            return ResetPasswordPage(email: email);
+          },
         ),
         GoRoute(
           path: Routes.home,
