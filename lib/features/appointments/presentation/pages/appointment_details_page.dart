@@ -5,6 +5,7 @@ import 'package:iconsax/iconsax.dart';
 
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_text_styles.dart';
+import '../../../../app/widgets/app_dialog.dart';
 import '../../../../app/widgets/custom_app_bar.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/utils/toast_helper.dart';
@@ -317,68 +318,39 @@ class AppointmentDetailsPage extends StatelessWidget {
   }
 
   void _showCancelDialog(BuildContext context) {
-    showDialog(
+    AppDialog.confirm(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.r),
-        ),
-        title: Text(
-          'dialog_cancel_appointment_title'.tr(context),
-          style: AppTextStyles.interSemiBoldw600F18.copyWith(
-            color: AppColors.textPrimary,
-          ),
-        ),
-        content: Text(
-          'dialog_cancel_appointment_msg'.tr(context),
-          style: AppTextStyles.interMediumw500F14.copyWith(
-            color: AppColors.textSecondary,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(
-              'btn_keep_it'.tr(context),
-              style: AppTextStyles.interMediumw500F14.copyWith(
-                color: AppColors.textMuted,
-              ),
-            ),
-          ),
-          BlocListener<AppointmentsCubit, AppointmentsState>(
-            listener: (ctx, state) {
-              if (state.status == AppointmentsStatus.success) {
-                Navigator.pop(dialogContext); // Close dialog
-                Navigator.pop(context); // Close details page
-                ToastHelper.showSuccess(
-                  context: context,
-                  message: 'msg_appointment_cancelled'.tr(context),
-                );
-              } else if (state.status == AppointmentsStatus.failure) {
-                Navigator.pop(dialogContext);
-                ToastHelper.showError(
-                  context: context,
-                  message: state.errorMessage ?? 'msg_cancel_error'.tr(context),
-                );
-              }
-            },
-            child: TextButton(
-              onPressed: () {
-                context.read<AppointmentsCubit>().cancelAppointment(
-                      id: appointment.id,
-                    );
-              },
-              child: Text(
-                'btn_confirm_cancel'.tr(context),
-                style: AppTextStyles.interSemiBoldw600F14.copyWith(
-                  color: AppColors.error,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+      title: 'dialog_cancel_appointment_title'.tr(context),
+      message: 'dialog_cancel_appointment_msg'.tr(context),
+      confirmText: 'btn_confirm_cancel'.tr(context),
+      cancelText: 'btn_keep_it'.tr(context),
+      isDanger: true,
+      onConfirm: () {
+        context.read<AppointmentsCubit>().cancelAppointment(
+              id: appointment.id,
+            );
+        // Listen for result
+        final cubit = context.read<AppointmentsCubit>();
+        cubit.stream
+            .firstWhere((state) =>
+                state.status == AppointmentsStatus.success ||
+                state.status == AppointmentsStatus.failure)
+            .then((state) {
+          if (!context.mounted) return;
+          if (state.status == AppointmentsStatus.success) {
+            Navigator.pop(context);
+            ToastHelper.showSuccess(
+              context: context,
+              message: 'msg_appointment_cancelled'.tr(context),
+            );
+          } else if (state.status == AppointmentsStatus.failure) {
+            ToastHelper.showError(
+              context: context,
+              message: state.errorMessage ?? 'msg_cancel_error'.tr(context),
+            );
+          }
+        });
+      },
     );
   }
 }
