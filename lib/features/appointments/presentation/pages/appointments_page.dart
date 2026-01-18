@@ -35,6 +35,12 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
         }
 
         if (state.status == AppointmentsStatus.failure) {
+          // Handle new user no profile error as empty state
+          if (state.errorMessage != null &&
+              (state.errorMessage!.contains('Profile not found') ||
+                  state.errorMessage!.contains('Patient profile not found'))) {
+            return _buildEmptyState();
+          }
           return Center(child: Text(state.errorMessage ?? 'Unknown error'));
         }
 

@@ -65,6 +65,13 @@ class PrescriptionsPage extends StatelessWidget {
                     return _buildShimmer(context);
                   }
                   if (state.status == PrescriptionsStatus.failure) {
+                    // Handle new user no profile error as empty state
+                    if (state.errorMessage != null &&
+                        (state.errorMessage!.contains('Profile not found') ||
+                            state.errorMessage!
+                                .contains('Patient profile not found'))) {
+                      return _buildEmptyState(context);
+                    }
                     return Center(child: Text(state.errorMessage ?? 'Error'));
                   }
                   if (state.prescriptions.isEmpty) {
