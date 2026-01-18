@@ -14,6 +14,7 @@ import '../../../prescriptions/presentation/cubit/prescriptions_state.dart';
 import '../widgets/prescription_card.dart';
 import 'prescription_details_page.dart';
 import '../../../../app/widgets/shimmer_loading.dart';
+import '../../../../app/widgets/empty_state_widget.dart';
 
 class PrescriptionsPage extends StatelessWidget {
   const PrescriptionsPage({super.key});
@@ -70,12 +71,20 @@ class PrescriptionsPage extends StatelessWidget {
                         (state.errorMessage!.contains('Profile not found') ||
                             state.errorMessage!
                                 .contains('Patient profile not found'))) {
-                      return _buildEmptyState(context);
+                      return EmptyStateWidget(
+                        title: 'empty_prescriptions_title'.tr(context),
+                        message: 'empty_prescriptions_msg'.tr(context),
+                        icon: Iconsax.document_text,
+                      );
                     }
                     return Center(child: Text(state.errorMessage ?? 'Error'));
                   }
                   if (state.prescriptions.isEmpty) {
-                    return _buildEmptyState(context);
+                    return EmptyStateWidget(
+                      title: 'empty_prescriptions_title'.tr(context),
+                      message: 'empty_prescriptions_msg'.tr(context),
+                      icon: Iconsax.document_text,
+                    );
                   }
                   return _buildPrescriptionsList(context, state.prescriptions);
                 },
@@ -151,44 +160,6 @@ class PrescriptionsPage extends StatelessWidget {
           ],
         );
       },
-    );
-  }
-
-  Widget _buildEmptyState(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 80.w,
-            height: 80.w,
-            decoration: BoxDecoration(
-              color: AppColors.accent.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Iconsax.document_text,
-              size: 40.sp,
-              color: AppColors.accent.withOpacity(0.5),
-            ),
-          ),
-          SizedBox(height: 20.h),
-          Text(
-            'empty_prescriptions_title'.tr(context),
-            style: AppTextStyles.interSemiBoldw600F18.copyWith(
-              color: AppColors.textPrimary,
-            ),
-          ),
-          SizedBox(height: 8.h),
-          Text(
-            'empty_prescriptions_msg'.tr(context),
-            style: AppTextStyles.interMediumw500F14.copyWith(
-              color: AppColors.textMuted,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
     );
   }
 

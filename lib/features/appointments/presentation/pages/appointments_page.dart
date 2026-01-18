@@ -1,6 +1,7 @@
 // features/appointments/presentation/pages/appointments_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:iconsax/iconsax.dart';
 
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_text_styles.dart';
@@ -15,6 +16,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../app/router/route_names.dart';
 import '../widgets/reschedule_bottom_sheet.dart';
 import '../../../../app/widgets/shimmer_loading.dart';
+import '../../../../app/widgets/empty_state_widget.dart';
 
 class AppointmentsPage extends StatefulWidget {
   const AppointmentsPage({super.key});
@@ -35,11 +37,18 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
         }
 
         if (state.status == AppointmentsStatus.failure) {
-          // Handle new user no profile error as empty state
           if (state.errorMessage != null &&
               (state.errorMessage!.contains('Profile not found') ||
                   state.errorMessage!.contains('Patient profile not found'))) {
-            return _buildEmptyState();
+            return EmptyStateWidget(
+              title: _selectedTabIndex == 0
+                  ? 'empty_upcoming_title'.tr(context)
+                  : 'empty_past_title'.tr(context),
+              message: _selectedTabIndex == 0
+                  ? 'empty_upcoming_msg'.tr(context)
+                  : 'empty_past_msg'.tr(context),
+              icon: Iconsax.calendar_remove,
+            );
           }
           return Center(child: Text(state.errorMessage ?? 'Unknown error'));
         }
@@ -76,7 +85,15 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
               // Appointments List
               Expanded(
                 child: appointments.isEmpty
-                    ? _buildEmptyState()
+                    ? EmptyStateWidget(
+                        title: _selectedTabIndex == 0
+                            ? 'empty_upcoming_title'.tr(context)
+                            : 'empty_past_title'.tr(context),
+                        message: _selectedTabIndex == 0
+                            ? 'empty_upcoming_msg'.tr(context)
+                            : 'empty_past_msg'.tr(context),
+                        icon: Iconsax.calendar_remove,
+                      )
                     : _buildAppointmentsList(appointments),
               ),
             ],
@@ -149,40 +166,6 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
           ],
         );
       },
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.calendar_today_outlined,
-            size: 64.sp,
-            color: AppColors.textMuted.withOpacity(0.5),
-          ),
-          SizedBox(height: 16.h),
-          Text(
-            _selectedTabIndex == 0
-                ? 'empty_upcoming_title'.tr(context)
-                : 'empty_past_title'.tr(context),
-            style: AppTextStyles.interMediumw500F16.copyWith(
-              color: AppColors.textMuted,
-            ),
-          ),
-          SizedBox(height: 8.h),
-          Text(
-            _selectedTabIndex == 0
-                ? 'empty_upcoming_msg'.tr(context)
-                : 'empty_past_msg'.tr(context),
-            style: AppTextStyles.interMediumw500F14.copyWith(
-              color: AppColors.textMuted.withOpacity(0.7),
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
     );
   }
 
