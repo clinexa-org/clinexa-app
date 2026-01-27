@@ -3,6 +3,7 @@ import '../../data/models/appointment_model.dart';
 import '../../domain/usecases/cancel_appointment_usecase.dart';
 import '../../domain/usecases/create_appointment_usecase.dart';
 import '../../domain/usecases/get_my_appointments_usecase.dart';
+import '../../domain/usecases/get_slots_usecase.dart';
 import '../../domain/usecases/reschedule_appointment_usecase.dart';
 import 'appointments_state.dart';
 
@@ -11,12 +12,14 @@ class AppointmentsCubit extends Cubit<AppointmentsState> {
   final CreateAppointmentUseCase createAppointmentUseCase;
   final RescheduleAppointmentUseCase rescheduleAppointmentUseCase;
   final CancelAppointmentUseCase cancelAppointmentUseCase;
+  final GetSlotsUseCase getSlotsUseCase;
 
   AppointmentsCubit({
     required this.getMyAppointmentsUseCase,
     required this.createAppointmentUseCase,
     required this.rescheduleAppointmentUseCase,
     required this.cancelAppointmentUseCase,
+    required this.getSlotsUseCase,
   }) : super(const AppointmentsState());
 
   Future<void> getMyAppointments() async {
@@ -139,6 +142,23 @@ class AppointmentsCubit extends Cubit<AppointmentsState> {
           appointments: appointments,
         ));
       },
+    );
+  }
+
+  Future<void> getSlots({required String date}) async {
+    emit(state.copyWith(slotsStatus: SlotsStatus.loading, slots: []));
+
+    final result = await getSlotsUseCase(date: date);
+
+    result.fold(
+      (failure) => emit(state.copyWith(
+        slotsStatus: SlotsStatus.failure,
+        errorMessage: failure.message,
+      )),
+      (slots) => emit(state.copyWith(
+        slotsStatus: SlotsStatus.success,
+        slots: slots,
+      )),
     );
   }
 }

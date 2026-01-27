@@ -17,6 +17,7 @@ import '../../features/appointments/domain/usecases/create_appointment_usecase.d
 import '../../features/appointments/domain/usecases/get_my_appointments_usecase.dart';
 import '../../features/appointments/domain/usecases/reschedule_appointment_usecase.dart';
 import '../../features/appointments/domain/usecases/cancel_appointment_usecase.dart';
+import '../../features/appointments/domain/usecases/get_slots_usecase.dart';
 import '../../features/appointments/presentation/cubit/appointments_cubit.dart';
 
 import '../../features/prescriptions/data/datasources/prescription_remote_data_source.dart';
@@ -137,6 +138,7 @@ Future<void> configureDependencies({required bool isProd}) async {
   sl.registerLazySingleton(() => CreateAppointmentUseCase(sl()));
   sl.registerLazySingleton(() => RescheduleAppointmentUseCase(sl()));
   sl.registerLazySingleton(() => CancelAppointmentUseCase(sl()));
+  sl.registerLazySingleton(() => GetSlotsUseCase(sl()));
 
   sl.registerFactory<AppointmentsCubit>(
     () => AppointmentsCubit(
@@ -144,6 +146,7 @@ Future<void> configureDependencies({required bool isProd}) async {
       createAppointmentUseCase: sl(),
       rescheduleAppointmentUseCase: sl(),
       cancelAppointmentUseCase: sl(),
+      getSlotsUseCase: sl(),
     ),
   );
 

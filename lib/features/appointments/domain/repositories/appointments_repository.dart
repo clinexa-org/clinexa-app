@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import '../../../../core/errors/failures.dart';
 import '../../domain/entities/appointment_entity.dart';
+import '../../domain/entities/slot_entity.dart';
 
 abstract class AppointmentsRepository {
   Future<Either<Failure, List<AppointmentEntity>>> getMyAppointments();
@@ -19,5 +20,9 @@ abstract class AppointmentsRepository {
 
   Future<Either<Failure, bool>> cancelAppointment({
     required String id,
+  });
+
+  Future<Either<Failure, List<SlotEntity>>> getSlots({
+    required String date,
   });
 }

@@ -69,16 +69,9 @@ class AppointmentCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          date,
+                          '$date • $time',
                           style: AppTextStyles.interSemiBoldw600F16.copyWith(
                             color: AppColors.textPrimary,
-                          ),
-                        ),
-                        SizedBox(height: 4.h),
-                        Text(
-                          '$time • $dayOfWeek',
-                          style: AppTextStyles.interMediumw500F12.copyWith(
-                            color: AppColors.textMuted,
                           ),
                         ),
                       ],

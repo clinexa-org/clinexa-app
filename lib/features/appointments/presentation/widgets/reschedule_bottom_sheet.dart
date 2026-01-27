@@ -11,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../appointments/presentation/cubit/appointments_cubit.dart';
 import '../../../appointments/presentation/cubit/appointments_state.dart';
 import '../../../../core/utils/toast_helper.dart';
+import '../../../../core/utils/date_extensions.dart';
 
 class RescheduleBottomSheet extends StatefulWidget {
   final String appointmentId;
@@ -31,24 +32,6 @@ class _RescheduleBottomSheetState extends State<RescheduleBottomSheet> {
   DateTime _currentMonth = DateTime.now();
   DateTime? _selectedDate;
   String? _selectedTime;
-
-  final List<String> _morningSlots = [
-    '09:00 AM',
-    '09:30 AM',
-    '10:00 AM',
-    '10:30 AM',
-    '11:00 AM',
-    '11:30 AM',
-  ];
-
-  final List<String> _afternoonSlots = [
-    '02:00 PM',
-    '02:30 PM',
-    '03:00 PM',
-    '03:30 PM',
-    '04:00 PM',
-    '04:30 PM',
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -179,17 +162,65 @@ class _RescheduleBottomSheetState extends State<RescheduleBottomSheet> {
   }
 
   Widget _buildTimeStep() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildTimeSection('time_morning'.tr(context), _morningSlots),
-        SizedBox(height: 24.h),
-        _buildTimeSection('time_afternoon'.tr(context), _afternoonSlots),
-      ],
+    return BlocBuilder<AppointmentsCubit, AppointmentsState>(
+      bloc: widget.cubit,
+      builder: (context, state) {
+        if (state.slotsStatus == SlotsStatus.loading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (state.slotsStatus == SlotsStatus.failure) {
+          return Center(
+            child: Text(state.errorMessage ?? 'Error loading slots'),
+          );
+        }
+
+        final morningSlots = state.slots.where((slot) {
+          final hour = slot.time.toCairoTime.hour;
+          return hour < 12;
+        }).toList();
+
+        final afternoonSlots = state.slots.where((slot) {
+          final hour = slot.time.toCairoTime.hour;
+          return hour >= 12;
+        }).toList();
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (morningSlots.isNotEmpty)
+              _buildTimeSection('time_morning'.tr(context), morningSlots),
+            SizedBox(height: 24.h),
+            if (afternoonSlots.isNotEmpty)
+              _buildTimeSection('time_afternoon'.tr(context), afternoonSlots),
+            if (morningSlots.isEmpty && afternoonSlots.isEmpty) ...[
+              SizedBox(height: 60.h),
+              Center(
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.calendar_today_outlined,
+                      size: 48.r,
+                      color: AppColors.textMuted.withOpacity(0.5),
+                    ),
+                    SizedBox(height: 16.h),
+                    Text(
+                      "clinic_closed".tr(context),
+                      style: AppTextStyles.interMediumw500F16.copyWith(
+                        color: AppColors.textMuted,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ],
+        );
+      },
     );
   }
 
-  Widget _buildTimeSection(String title, List<String> slots) {
+  Widget _buildTimeSection(String title, List<dynamic> slots) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -203,33 +234,59 @@ class _RescheduleBottomSheetState extends State<RescheduleBottomSheet> {
         Wrap(
           spacing: 12.w,
           runSpacing: 12.h,
-          children: slots.map((time) => _buildTimeSlot(time)).toList(),
+          children: slots.map((slot) => _buildTimeSlot(slot)).toList(),
         ),
       ],
     );
   }
 
-  Widget _buildTimeSlot(String time) {
-    final isSelected = _selectedTime == time;
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedTime = time;
-        });
-      },
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.accent : AppColors.surface,
-          borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(
-            color: isSelected ? AppColors.accent : AppColors.border,
+  Widget _buildTimeSlot(dynamic slot) {
+    final time = TimeOfDay.fromDateTime(slot.time.toCairoTime);
+    final hour = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
+    final minute = time.minute.toString().padLeft(2, '0');
+    final period = time.period == DayPeriod.am ? 'AM' : 'PM';
+    final timeStr = "$hour:$minute $period";
+
+    final isSelected = _selectedTime == timeStr;
+    final isBooked = slot.isBooked;
+
+    return AbsorbPointer(
+      absorbing: isBooked,
+      child: GestureDetector(
+        onTap: isBooked
+            ? null
+            : () {
+                setState(() {
+                  _selectedTime = timeStr;
+                });
+              },
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+          decoration: BoxDecoration(
+            color: isBooked
+                ? Colors.grey.shade300
+                : isSelected
+                    ? AppColors.accent
+                    : AppColors.surface,
+            borderRadius: BorderRadius.circular(12.r),
+            border: Border.all(
+              color: isBooked
+                  ? Colors.transparent
+                  : isSelected
+                      ? AppColors.accent
+                      : AppColors.border,
+            ),
           ),
-        ),
-        child: Text(
-          time,
-          style: AppTextStyles.interMediumw500F14.copyWith(
-            color: isSelected ? Colors.white : AppColors.textPrimary,
+          child: Text(
+            timeStr,
+            style: AppTextStyles.interMediumw500F14.copyWith(
+              color: isBooked
+                  ? AppColors.textMuted
+                  : isSelected
+                      ? Colors.white
+                      : AppColors.textPrimary,
+              decoration: isBooked ? TextDecoration.lineThrough : null,
+            ),
           ),
         ),
       ),
@@ -408,9 +465,14 @@ class _RescheduleBottomSheetState extends State<RescheduleBottomSheet> {
                   isLoading: isLoading,
                   onPressed: () {
                     if (_currentStep == 0) {
-                      setState(() {
-                        _currentStep = 1;
-                      });
+                      if (_selectedDate != null) {
+                        final dateStr =
+                            "${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}";
+                        widget.cubit.getSlots(date: dateStr);
+                        setState(() {
+                          _currentStep = 1;
+                        });
+                      }
                     } else {
                       _handleReschedule();
                     }

@@ -1,4 +1,6 @@
+import 'package:intl/intl.dart';
 import '../../domain/entities/appointment_entity.dart';
+import '../../../../core/utils/date_extensions.dart';
 
 class AppointmentModel extends AppointmentEntity {
   const AppointmentModel({
@@ -39,12 +41,12 @@ class AppointmentModel extends AppointmentEntity {
 
     final clinic = json['clinic_id'] ?? json['clinic'] ?? {};
 
+    final cairoTime = startTime.toCairoTime;
+
     return AppointmentModel(
       id: json['_id'] ?? '',
-      date:
-          "${startTime.year}-${startTime.month.toString().padLeft(2, '0')}-${startTime.day.toString().padLeft(2, '0')}",
-      time:
-          "${startTime.hour.toString().padLeft(2, '0')}:${startTime.minute.toString().padLeft(2, '0')}",
+      date: DateFormat('yyyy-MM-dd').format(cairoTime),
+      time: DateFormat('hh:mm a').format(cairoTime),
       reason: json['reason'] ?? '',
       status: json['status'] ?? 'pending',
       doctorName: doctorName,

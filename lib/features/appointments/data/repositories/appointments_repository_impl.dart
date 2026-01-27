@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import '../../../../core/errors/dio_error_mapper.dart';
 import '../../../../core/errors/failures.dart';
 import '../../domain/entities/appointment_entity.dart';
+import '../../domain/entities/slot_entity.dart';
 import '../../domain/repositories/appointments_repository.dart';
 import '../datasources/appointment_remote_data_source.dart';
 
@@ -11,6 +12,23 @@ class AppointmentsRepositoryImpl implements AppointmentsRepository {
   final AppointmentRemoteDataSource remoteDataSource;
 
   AppointmentsRepositoryImpl({required this.remoteDataSource});
+
+  @override
+  Future<Either<Failure, List<SlotEntity>>> getSlots(
+      {required String date}) async {
+    try {
+      final response = await remoteDataSource.getSlots(date: date);
+      if (response.success) {
+        return Right(response.data ?? []);
+      } else {
+        return Left(Failure(message: response.message));
+      }
+    } on DioException catch (e) {
+      return Left(DioErrorMapper.map(e));
+    } catch (e) {
+      return Left(Failure(message: e.toString()));
+    }
+  }
 
   @override
   Future<Either<Failure, List<AppointmentEntity>>> getMyAppointments() async {

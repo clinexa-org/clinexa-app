@@ -112,6 +112,7 @@ class _BookingFlowPageState extends State<BookingFlowPage> {
 
                   // Step 1: Time Selection
                   BookingTimeStep(
+                    selectedDate: _selectedDate,
                     selectedTime: _selectedTime,
                     onTimeSelected: (time) {
                       setState(() => _selectedTime = time);

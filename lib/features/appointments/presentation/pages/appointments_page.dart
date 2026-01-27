@@ -1,5 +1,5 @@
-// features/appointments/presentation/pages/appointments_page.dart
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -135,32 +135,39 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
             ),
 
             // Appointments in this month
-            ...monthAppointments.map((apt) => AppointmentCard(
-                  date: apt.date,
-                  time: apt.time,
-                  dayOfWeek: _dayOfWeek(apt.date),
-                  doctorName: apt.doctorName,
-                  reason: apt.reason,
-                  status: _mapStatus(apt.status),
-                  onViewDetails: () {
-                    context.pushNamed(
-                      Routes.appointmentDetailsName,
-                      extra: apt,
-                    );
-                  },
-                  // onReschedule: () {
-                  //   final cubit = context.read<AppointmentsCubit>();
-                  //   showModalBottomSheet(
-                  //     context: context,
-                  //     isScrollControlled: true,
-                  //     backgroundColor: Colors.transparent,
-                  //     builder: (context) => RescheduleBottomSheet(
-                  //       appointmentId: apt.id,
-                  //       cubit: cubit,
-                  //     ),
-                  //   );
-                  // },
-                )),
+            ...monthAppointments.map((apt) {
+              final parsedDate = DateTime.tryParse(apt.date);
+              final formattedDate = parsedDate != null
+                  ? DateFormat('dd MMM yyyy').format(parsedDate)
+                  : apt.date;
+
+              return AppointmentCard(
+                date: formattedDate,
+                time: apt.time,
+                dayOfWeek: '', // Day of week no longer used separately
+                doctorName: apt.doctorName,
+                reason: apt.reason,
+                status: _mapStatus(apt.status),
+                onViewDetails: () {
+                  context.pushNamed(
+                    Routes.appointmentDetailsName,
+                    extra: apt,
+                  );
+                },
+                onReschedule: () {
+                  final cubit = context.read<AppointmentsCubit>();
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => RescheduleBottomSheet(
+                      appointmentId: apt.id,
+                      cubit: cubit,
+                    ),
+                  );
+                },
+              );
+            }),
 
             SizedBox(height: 8.h),
           ],

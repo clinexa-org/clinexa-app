@@ -2,6 +2,7 @@ import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/models/response_model.dart';
 import '../../../../core/network/api_client.dart';
 import '../models/appointment_model.dart';
+import '../models/slot_model.dart';
 
 abstract class AppointmentRemoteDataSource {
   Future<ResponseModel<List<AppointmentModel>>> getMyAppointments();
@@ -20,6 +21,10 @@ abstract class AppointmentRemoteDataSource {
 
   Future<ResponseModel<bool>> cancelAppointment({
     required String id,
+  });
+
+  Future<ResponseModel<List<SlotModel>>> getSlots({
+    required String date,
   });
 }
 
@@ -96,6 +101,25 @@ class AppointmentRemoteDataSourceImpl implements AppointmentRemoteDataSource {
     return ResponseModel.fromMap(
       response.data,
       (data) => true, // Just return success, don't parse flat response
+    );
+  }
+
+  @override
+  Future<ResponseModel<List<SlotModel>>> getSlots(
+      {required String date}) async {
+    final response = await apiClient.get(
+      ApiEndpoints.slots,
+      queryParameters: {'date': date},
+    );
+
+    return ResponseModel.fromMap(
+      response.data,
+      (data) {
+        if (data['slots'] == null) return [];
+        return (data['slots'] as List)
+            .map((json) => SlotModel.fromJson(json))
+            .toList();
+      },
     );
   }
 }

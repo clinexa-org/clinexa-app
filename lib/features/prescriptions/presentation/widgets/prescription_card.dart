@@ -83,10 +83,13 @@ class PrescriptionCard extends StatelessWidget {
                   // Prescription ID and medicine count
                   Row(
                     children: [
-                      Text(
-                        '#$prescriptionId',
-                        style: AppTextStyles.interSemiBoldw600F16.copyWith(
-                          color: AppColors.textPrimary,
+                      Expanded(
+                        child: Text(
+                          '#$prescriptionId',
+                          style: AppTextStyles.interSemiBoldw600F16.copyWith(
+                            color: AppColors.textPrimary,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       if (medicineCount > 0) ...[

@@ -39,6 +39,7 @@ class ApiEndpoints {
   static String appointmentComplete(String id) => '/appointments/complete/$id';
   static String appointmentReschedule(String id) =>
       '/appointments/reschedule/$id';
+  static const String slots = '/appointments/slots';
 
   // ============ Sprint 5 — Prescriptions Endpoints ============
   static const String prescriptions = '/prescriptions';

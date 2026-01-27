@@ -284,5 +284,6 @@
   "reset_password_success_msg": "Your password has been successfully reset. You can now login with your new password.",
   "go_to_login": "Go to Login",
   "reset_password_error": "Failed to reset password",
-  "otp_resent": "OTP resent successfully"
+  "otp_resent": "OTP resent successfully",
+  "clinic_closed": "Clinic is closed on this day"
 }

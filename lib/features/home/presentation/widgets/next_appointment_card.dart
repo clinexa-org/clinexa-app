@@ -127,26 +127,8 @@ class NextAppointmentCard extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        Icon(
-                          Iconsax.calendar_1,
-                          size: 16.sp,
-                          color: AppColors.textMuted,
-                        ),
-                        SizedBox(width: 8.w),
                         Text(
-                          appointment.date,
-                          style: AppTextStyles.interSemiBoldw600F12
-                              .copyWith(color: Colors.white),
-                        ),
-                        SizedBox(width: 24.w),
-                        Icon(
-                          Iconsax.clock,
-                          size: 16.sp,
-                          color: AppColors.textMuted,
-                        ),
-                        SizedBox(width: 8.w),
-                        Text(
-                          appointment.time,
+                          '${appointment.date} • ${appointment.time}',
                           style: AppTextStyles.interSemiBoldw600F12
                               .copyWith(color: Colors.white),
                         ),
