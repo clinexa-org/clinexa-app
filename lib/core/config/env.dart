@@ -18,4 +18,8 @@ class Env {
     }
     return v;
   }
+
+  static bool get firebaseEnabled {
+    return dotenv.env['FIREBASE_ENABLED']?.toLowerCase() == 'true';
+  }
 }

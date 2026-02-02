@@ -13,6 +13,7 @@ import '../../features/onboarding/presentation/pages/onboarding_page.dart';
 import '../../features/profile/presentation/pages/edit_profile_page.dart';
 import '../../features/appointments/presentation/pages/appointment_details_page.dart';
 import '../../features/appointments/domain/entities/appointment_entity.dart';
+import '../../features/notifications/presentation/pages/inbox_page.dart';
 import 'route_names.dart';
 
 class AppRouter {
@@ -72,6 +73,11 @@ class AppRouter {
             final appointment = state.extra as AppointmentEntity;
             return AppointmentDetailsPage(appointment: appointment);
           },
+        ),
+        GoRoute(
+          path: Routes.inbox,
+          name: Routes.inboxName,
+          builder: (context, state) => const InboxPage(),
         ),
       ],
     );

@@ -8,6 +8,10 @@ import 'package:go_router/go_router.dart';
 import '../core/localization/app_localizations.dart';
 import '../core/presentation/cubit/layout_cubit.dart';
 import '../core/presentation/cubit/layout_state.dart';
+import '../features/auth/presentation/cubit/auth_cubit.dart';
+import '../features/auth/presentation/cubit/auth_state.dart';
+import '../features/appointments/presentation/cubit/appointments_cubit.dart';
+import '../features/prescriptions/presentation/cubit/prescriptions_cubit.dart';
 import 'router/route_names.dart';
 
 // Global navigator key for handling navigation from interceptors
@@ -33,46 +37,55 @@ class ClinexaApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<LayoutCubit>.value(
       value: layoutCubit,
-      child: ScreenUtilInit(
-        designSize: const Size(375, 812),
-        minTextAdapt: true,
-        splitScreenMode: true,
-        builder: (context, child) {
-          return BlocBuilder<LayoutCubit, LayoutState>(
-            builder: (context, layoutState) {
-              return MaterialApp.router(
-                debugShowCheckedModeBanner: false,
-                title: 'Clinexa',
-                routerConfig: router,
-
-                // Localization
-                locale: layoutState.locale,
-                supportedLocales: const [
-                  Locale('en'),
-                  Locale('ar'),
-                ],
-                localizationsDelegates: const [
-                  AppLocalizations.delegate,
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                ],
-
-                theme: ThemeData(
-                  brightness: Brightness.dark,
-                  scaffoldBackgroundColor: const Color(0xFF181A1B),
-                  useMaterial3: true,
-                ),
-                darkTheme: ThemeData(
-                  brightness: Brightness.dark,
-                  scaffoldBackgroundColor: const Color(0xFF181A1B),
-                  useMaterial3: true,
-                ),
-                themeMode: ThemeMode.dark,
-              );
-            },
-          );
+      child: BlocListener<AuthCubit, AuthState>(
+        listenWhen: (previous, current) =>
+            !previous.isAuthed && current.isAuthed,
+        listener: (context, state) {
+          // User just logged in - refresh data
+          context.read<AppointmentsCubit>().getMyAppointments();
+          context.read<PrescriptionsCubit>().getMyPrescriptions();
         },
+        child: ScreenUtilInit(
+          designSize: const Size(375, 812),
+          minTextAdapt: true,
+          splitScreenMode: true,
+          builder: (context, child) {
+            return BlocBuilder<LayoutCubit, LayoutState>(
+              builder: (context, layoutState) {
+                return MaterialApp.router(
+                  debugShowCheckedModeBanner: false,
+                  title: 'Clinexa',
+                  routerConfig: router,
+
+                  // Localization
+                  locale: layoutState.locale,
+                  supportedLocales: const [
+                    Locale('en'),
+                    Locale('ar'),
+                  ],
+                  localizationsDelegates: const [
+                    AppLocalizations.delegate,
+                    GlobalMaterialLocalizations.delegate,
+                    GlobalWidgetsLocalizations.delegate,
+                    GlobalCupertinoLocalizations.delegate,
+                  ],
+
+                  theme: ThemeData(
+                    brightness: Brightness.dark,
+                    scaffoldBackgroundColor: const Color(0xFF181A1B),
+                    useMaterial3: true,
+                  ),
+                  darkTheme: ThemeData(
+                    brightness: Brightness.dark,
+                    scaffoldBackgroundColor: const Color(0xFF181A1B),
+                    useMaterial3: true,
+                  ),
+                  themeMode: ThemeMode.dark,
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }

@@ -28,4 +28,6 @@ class AuthLocalDataSource {
   Future<String?> readUserAvatar() => cacheHelper.readUserAvatar();
 
   Future<void> clearUser() => cacheHelper.clearUser();
+
+  Future<void> markOnboardingAsSeen() => cacheHelper.markOnboardingAsSeen();
 }

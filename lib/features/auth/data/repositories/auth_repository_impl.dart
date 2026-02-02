@@ -42,6 +42,8 @@ class AuthRepositoryImpl implements AuthRepository {
         role: response.data!.user.role,
         avatar: response.data!.user.avatar,
       );
+      // Mark onboarding as seen (safety: ensures user won't be redirected to onboarding after restart)
+      await local.markOnboardingAsSeen();
       return right(response.data!.toEntity());
     } on DioException catch (e) {
       return left(DioErrorMapper.map(e));

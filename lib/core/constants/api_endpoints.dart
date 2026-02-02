@@ -60,4 +60,9 @@ class ApiEndpoints {
       '/admin/appointments/$appointmentId/status';
   static const String adminPrescriptions = '/admin/prescriptions';
   static const String adminClinic = '/admin/clinic';
+
+  // ============ Notifications Endpoints ============
+  static const String deviceToken = '/auth/device-token';
+  static const String notifications = '/notifications/me';
+  static String notificationMarkRead(String id) => '/notifications/$id/read';
 }

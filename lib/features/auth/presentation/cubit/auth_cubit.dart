@@ -1,7 +1,10 @@
 // features/auth/presentation/cubit/auth_cubit.dart
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/di/injection.dart';
+import '../../../../core/services/notification_service.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../domain/usecases/forgot_password_usecase.dart';
 import '../../domain/usecases/login_usecase.dart';
@@ -119,6 +122,8 @@ class AuthCubit extends Cubit<AuthState> {
             clearError: true,
           ),
         );
+        // Register device token for push notifications
+        _registerDeviceToken();
       },
     );
   }
@@ -164,6 +169,8 @@ class AuthCubit extends Cubit<AuthState> {
             clearError: true,
           ),
         );
+        // Register device token for push notifications
+        _registerDeviceToken();
       },
     );
   }
@@ -259,5 +266,17 @@ class AuthCubit extends Cubit<AuthState> {
         ));
       },
     );
+  }
+
+  /// Register FCM device token with backend for push notifications
+  void _registerDeviceToken() {
+    try {
+      final notificationService = sl<NotificationService>();
+      notificationService.initialize();
+      notificationService.registerDeviceToken();
+      debugPrint('Device token registration triggered after auth');
+    } catch (e) {
+      debugPrint('Failed to register device token: $e');
+    }
   }
 }

@@ -1,4 +1,4 @@
-package com.faris.clinexa.clinexa_mobile
+package com.clinexa.app
 
 import io.flutter.embedding.android.FlutterActivity
 

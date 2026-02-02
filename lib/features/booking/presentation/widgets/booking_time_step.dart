@@ -9,6 +9,7 @@ import '../../../../core/localization/app_localizations.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../appointments/domain/entities/slot_entity.dart';
 import '../../../appointments/presentation/cubit/appointments_cubit.dart';
 import '../../../appointments/presentation/cubit/appointments_state.dart';
 import '../../../../core/utils/date_extensions.dart';
@@ -108,29 +109,27 @@ class _BookingTimeStepState extends State<BookingTimeStep> {
                     if (afternoonSlots.isNotEmpty)
                       _buildTimeSection(
                           'time_afternoon'.tr(context), afternoonSlots),
-                    if (morningSlots.isEmpty && afternoonSlots.isEmpty)
-                      if (morningSlots.isEmpty && afternoonSlots.isEmpty) ...[
-                        SizedBox(height: 60.h),
-                        Center(
-                          child: Column(
-                            children: [
-                              Icon(
-                                Icons.calendar_today_outlined,
-                                size: 48.r,
-                                color: AppColors.textMuted.withOpacity(0.5),
+                    if (morningSlots.isEmpty && afternoonSlots.isEmpty) ...[
+                      SizedBox(height: 60.h),
+                      Center(
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.calendar_today_outlined,
+                              size: 48.r,
+                              color: AppColors.textMuted.withOpacity(0.5),
+                            ),
+                            SizedBox(height: 16.h),
+                            Text(
+                              "clinic_closed".tr(context),
+                              style: AppTextStyles.interMediumw500F16.copyWith(
+                                color: AppColors.textMuted,
                               ),
-                              SizedBox(height: 16.h),
-                              Text(
-                                "clinic_closed".tr(context),
-                                style:
-                                    AppTextStyles.interMediumw500F16.copyWith(
-                                  color: AppColors.textMuted,
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -142,7 +141,7 @@ class _BookingTimeStepState extends State<BookingTimeStep> {
     );
   }
 
-  Widget _buildTimeSection(String title, List<dynamic> slots) {
+  Widget _buildTimeSection(String title, List<SlotEntity> slots) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -162,22 +161,7 @@ class _BookingTimeStepState extends State<BookingTimeStep> {
     );
   }
 
-  Widget _buildTimeSlot(dynamic slot) {
-    // Extract time string for display and comparison
-    // Assuming slot.time is DateTime. We need to format it or use a separate formatter.
-    // Since the original code used strings like "09:00 AM", we should probably format the DateTime.
-    // But wait, the API returns full ISO string.
-    // The previous implementation used exact string match.
-    // I shall format the time to "hh:mm a" for display and usage as value?
-    // The request says: "Expect List<Map<String, dynamic>>" and use `slot.status`.
-
-    // Actually the parent expects a String for `onTimeSelected`.
-    // I should convert the DateTime to String format that the backend expects for creation?
-    // The backend `createAppointment` takes `time` as String.
-    // `booking_flow_page.dart` formats it: `_formatTimeTo24H`.
-    // If I return "09:00 AM", `booking_flow_page` handles it.
-    // So I should format `slot.time` to "hh:mm a" (12-hour format).
-
+  Widget _buildTimeSlot(SlotEntity slot) {
     final time = TimeOfDay.fromDateTime(slot.time.toCairoTime);
     final hour = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
     final minute = time.minute.toString().padLeft(2, '0');

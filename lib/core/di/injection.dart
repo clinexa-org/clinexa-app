@@ -49,6 +49,15 @@ import '../../features/auth/domain/usecases/register_usecase.dart';
 import '../../features/auth/domain/usecases/reset_password_usecase.dart';
 import '../../features/auth/presentation/cubit/auth_cubit.dart';
 
+import '../services/notification_service.dart';
+import '../services/socket_service.dart';
+import '../../features/notifications/data/datasources/notification_remote_data_source.dart';
+import '../../features/notifications/data/repositories/notifications_repository_impl.dart';
+import '../../features/notifications/domain/repositories/notifications_repository.dart';
+import '../../features/notifications/domain/usecases/get_notifications_usecase.dart';
+import '../../features/notifications/domain/usecases/mark_notification_read_usecase.dart';
+import '../../features/notifications/presentation/cubit/notifications_cubit.dart';
+
 final sl = GetIt.instance;
 
 Future<void> configureDependencies({required bool isProd}) async {
@@ -176,5 +185,29 @@ Future<void> configureDependencies({required bool isProd}) async {
 
   sl.registerFactory<DoctorsCubit>(
     () => DoctorsCubit(getDoctorsUseCase: sl()),
+  );
+
+  /// Notification Services
+  sl.registerLazySingleton<NotificationService>(
+    () => NotificationService(sl()),
+  );
+  sl.registerLazySingleton<SocketService>(() => SocketService());
+
+  /// Notifications Feature
+  sl.registerLazySingleton<NotificationRemoteDataSource>(
+    () => NotificationRemoteDataSourceImpl(sl()),
+  );
+
+  sl.registerLazySingleton<NotificationsRepository>(
+      () => NotificationsRepositoryImpl(remoteDataSource: sl()));
+
+  sl.registerLazySingleton(() => GetNotificationsUseCase(sl()));
+  sl.registerLazySingleton(() => MarkNotificationReadUseCase(sl()));
+
+  sl.registerFactory<NotificationsCubit>(
+    () => NotificationsCubit(
+      getNotificationsUseCase: sl(),
+      markNotificationReadUseCase: sl(),
+    ),
   );
 }

@@ -52,6 +52,7 @@ class _BookingFlowPageState extends State<BookingFlowPage> {
 
     // Bloc Listener for Appointments
     return BlocListener<AppointmentsCubit, AppointmentsState>(
+      listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
         if (state.status == AppointmentsStatus.success) {
           if (_currentStep == 2) {

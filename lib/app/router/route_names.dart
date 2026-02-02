@@ -22,4 +22,6 @@ abstract class Routes {
   static const editProfileName = 'edit-profile';
   static const settingsName = 'settings';
   static const appointmentDetailsName = 'appointment_details';
+  static const inbox = '/inbox';
+  static const inboxName = 'inbox';
 }
