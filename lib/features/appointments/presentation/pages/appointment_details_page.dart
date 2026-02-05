@@ -251,68 +251,71 @@ class AppointmentDetailsPage extends StatelessWidget {
     return Column(
       children: [
         // Reschedule Button
-        SizedBox(
-          width: double.infinity,
-          height: 52.h,
-          child: OutlinedButton(
-            onPressed: () {
-              final cubit = context.read<AppointmentsCubit>();
-              showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                backgroundColor: Colors.transparent,
-                builder: (context) => RescheduleBottomSheet(
-                  appointmentId: appointment.id,
-                  cubit: cubit,
-                ),
-              );
-            },
-            style: OutlinedButton.styleFrom(
-              side: BorderSide(color: AppColors.accent),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12.r),
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Iconsax.calendar_edit,
-                    color: AppColors.accent, size: 20.sp),
-                SizedBox(width: 8.w),
-                Text(
-                  'btn_reschedule'.tr(context),
-                  style: AppTextStyles.interSemiBoldw600F16.copyWith(
-                    color: AppColors.accent,
+        if (_mapStatus(appointment.status) != AppointmentStatus.confirmed)
+          SizedBox(
+            width: double.infinity,
+            height: 52.h,
+            child: OutlinedButton(
+              onPressed: () {
+                final cubit = context.read<AppointmentsCubit>();
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => RescheduleBottomSheet(
+                    appointmentId: appointment.id,
+                    cubit: cubit,
                   ),
+                );
+              },
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: AppColors.accent),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.r),
                 ),
-              ],
-            ),
-          ),
-        ),
-
-        SizedBox(height: 12.h),
-
-        // Cancel Button
-        SizedBox(
-          width: double.infinity,
-          height: 52.h,
-          child: TextButton(
-            onPressed: () {
-              _showCancelDialog(context);
-            },
-            style: TextButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12.r),
               ),
-            ),
-            child: Text(
-              'btn_cancel_appointment'.tr(context),
-              style: AppTextStyles.interMediumw500F14.copyWith(
-                color: AppColors.error,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Iconsax.calendar_edit,
+                      color: AppColors.accent, size: 20.sp),
+                  SizedBox(width: 8.w),
+                  Text(
+                    'btn_reschedule'.tr(context),
+                    style: AppTextStyles.interSemiBoldw600F16.copyWith(
+                      color: AppColors.accent,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
-        ),
+
+        if (_mapStatus(appointment.status) != AppointmentStatus.confirmed) ...[
+          SizedBox(height: 12.h),
+
+          // Cancel Button
+          SizedBox(
+            width: double.infinity,
+            height: 52.h,
+            child: TextButton(
+              onPressed: () {
+                _showCancelDialog(context);
+              },
+              style: TextButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+              ),
+              child: Text(
+                'btn_cancel_appointment'.tr(context),
+                style: AppTextStyles.interMediumw500F14.copyWith(
+                  color: AppColors.error,
+                ),
+              ),
+            ),
+          ),
+        ],
       ],
     );
   }

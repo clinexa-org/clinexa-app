@@ -268,13 +268,19 @@ class AuthCubit extends Cubit<AuthState> {
     );
   }
 
-  /// Register FCM device token with backend for push notifications
+  /// Register FCM device token and start RTDB listener
   void _registerDeviceToken() {
     try {
       final notificationService = sl<NotificationService>();
       notificationService.initialize();
       notificationService.registerDeviceToken();
       debugPrint('Device token registration triggered after auth');
+
+      // Also start listening to RTDB
+      final userId = state.userId;
+      if (userId != null) {
+        notificationService.listenToRealtimeNotifications(userId);
+      }
     } catch (e) {
       debugPrint('Failed to register device token: $e');
     }

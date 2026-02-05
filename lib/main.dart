@@ -138,6 +138,12 @@ Future<void> _initializeNotifications({
       debugPrint('Connecting to socket at: $socketUrl');
       socketService.connect(socketUrl, token);
 
+      // Start listening to RTDB notifications (foreground updates)
+      final userId = await sl<CacheHelper>().getUserId();
+      if (userId != null && userId.isNotEmpty) {
+        notificationService.listenToRealtimeNotifications(userId);
+      }
+
       // Listen for patient-specific events
       socketService.listenForPatientEvents(
         onAppointmentUpdated: (data) {

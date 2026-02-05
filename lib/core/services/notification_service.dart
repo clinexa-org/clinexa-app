@@ -1,7 +1,9 @@
 // core/services/notification_service.dart
 import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:firebase_database/firebase_database.dart';
 import '../network/api_client.dart';
 import '../constants/api_endpoints.dart';
 
@@ -10,6 +12,7 @@ class NotificationService {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
+  final FirebaseDatabase _database = FirebaseDatabase.instance;
   final ApiClient _apiClient;
 
   NotificationService(this._apiClient);
@@ -49,7 +52,7 @@ class NotificationService {
       // Listen for token refresh
       _firebaseMessaging.onTokenRefresh.listen(_sendTokenToBackend);
     } catch (e) {
-      print('Failed to register FCM token: $e');
+      debugPrint('Failed to register FCM token: $e');
     }
   }
 
@@ -63,9 +66,9 @@ class NotificationService {
           'platform': platform,
         },
       );
-      print('FCM Token Registered');
+      debugPrint('FCM Token Registered');
     } catch (e) {
-      print('Failed to send FCM token to backend: $e');
+      debugPrint('Failed to send FCM token to backend: $e');
     }
   }
 
@@ -78,13 +81,56 @@ class NotificationService {
     return 'unknown';
   }
 
+  /// Start listening to real-time notifications from Firebase RTDB
+  /// This replaces Socket.io for foreground updates on Vercel
+  void listenToRealtimeNotifications(String userId) {
+    if (userId.isEmpty) return;
+
+    debugPrint(
+        'NotificationService: Listening to RTDB notifications for user $userId');
+
+    final ref = _database.ref('notifications/$userId');
+
+    // Listen for new notifications added
+    ref.limitToLast(1).onChildAdded.listen((event) {
+      if (event.snapshot.value == null) return;
+
+      try {
+        final data = Map<String, dynamic>.from(event.snapshot.value as Map);
+
+        // Check if notification is recent (within last minute)
+        final createdAtStr = data['createdAt'];
+        if (createdAtStr != null) {
+          final createdAt = DateTime.parse(createdAtStr);
+          if (DateTime.now().difference(createdAt).inMinutes > 2) {
+            return; // Skip old notifications
+          }
+        }
+
+        final title = data['title'] ?? 'New Notification';
+        final body = data['body'] ?? '';
+
+        debugPrint('NotificationService: Received RTDB notification: $title');
+
+        _showLocalNotification(RemoteMessage(
+          notification: RemoteNotification(title: title, body: body),
+          data: data['data'] != null
+              ? Map<String, dynamic>.from(data['data'])
+              : {},
+        ));
+      } catch (e) {
+        debugPrint('NotificationService: Error parsing RTDB data: $e');
+      }
+    });
+  }
+
   void _showLocalNotification(RemoteMessage message) {
     RemoteNotification? notification = message.notification;
     AndroidNotification? android = message.notification?.android;
 
     if (notification != null) {
       _localNotifications.show(
-        notification.hashCode,
+        DateTime.now().millisecond,
         notification.title,
         notification.body,
         NotificationDetails(
@@ -95,8 +141,17 @@ class NotificationService {
                   importance: Importance.max,
                   priority: Priority.high,
                 )
-              : null,
-          iOS: const DarwinNotificationDetails(),
+              : const AndroidNotificationDetails(
+                  'high_importance_channel',
+                  'High Importance Notifications',
+                  importance: Importance.max,
+                  priority: Priority.high,
+                ),
+          iOS: const DarwinNotificationDetails(
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
+          ),
         ),
       );
     }

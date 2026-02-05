@@ -96,11 +96,16 @@ dependencies:
   firebase_messaging: ^15.2.0
   firebase_analytics: ^11.4.0
   firebase_crashlytics: ^4.3.0
+  firebase_database: ^11.2.0
 
   # --- Notifications & Real-time ---
   socket_io_client: ^2.0.0
   flutter_local_notifications: ^16.0.0
   device_info_plus: ^9.0.0
+  pdf: ^3.11.3
+  printing: ^5.14.2
+  path_provider: ^2.1.5
+  open_file_plus: ^3.4.1+1
 
 dev_dependencies:
   flutter_lints: ^3.0.0

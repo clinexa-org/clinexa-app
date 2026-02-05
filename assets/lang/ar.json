@@ -268,5 +268,15 @@
   "go_to_login": "الذهاب لتسجيل الدخول",
   "reset_password_error": "فشل إعادة تعيين كلمة المرور",
   "otp_resent": "تم إعادة إرسال الرمز بنجاح",
-  "clinic_closed": "العيادة مغلقة في هذا اليوم"
+  "clinic_closed": "العيادة مغلقة في هذا اليوم",
+  "msg_download_success": "تم تحميل ملف PDF بنجاح",
+  "label_prescription_title": "وصفة طبية",
+  "label_id": "رقم",
+  "label_medicine": "الدواء",
+  "label_dosage": "الجرعة",
+  "label_type": "النوع",
+  "label_duration": "المدة",
+  "label_instructions": "التعليمات",
+  "msg_generated_by": "تم إنشاؤه بواسطة تطبيق كلينكسا",
+  "label_clinic_name": "كلينكسا"
 }

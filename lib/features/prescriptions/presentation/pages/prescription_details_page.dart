@@ -1,12 +1,16 @@
-// features/prescriptions/presentation/pages/prescription_details_page.dart
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:printing/printing.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:open_file_plus/open_file_plus.dart';
 
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_text_styles.dart';
 import '../../../../app/widgets/custom_app_bar.dart';
 import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/services/pdf_service.dart';
 import '../widgets/medicine_item.dart';
 
 class PrescriptionDetailsPage extends StatelessWidget {
@@ -159,8 +163,8 @@ class PrescriptionDetailsPage extends StatelessWidget {
               width: 36.w,
               height: 36.w,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
+                gradient: const LinearGradient(
+                  colors: const [
                     AppColors.accent,
                     AppColors.accentLight,
                   ],
@@ -260,15 +264,33 @@ class PrescriptionDetailsPage extends StatelessWidget {
             child: Material(
               color: Colors.transparent,
               child: InkWell(
-                onTap: () {
-                  // TODO: Implement share functionality
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('msg_share_soon'.tr(context)),
-                      backgroundColor: AppColors.surface,
-                      behavior: SnackBarBehavior.floating,
-                    ),
-                  );
+                onTap: () async {
+                  try {
+                    // Generate PDF
+                    final pdfService = PdfService();
+                    final pdfBytes = await pdfService.generatePrescriptionPdf(
+                      prescriptionId: prescriptionId,
+                      date: date,
+                      doctorName: doctorName,
+                      medicines: medicines,
+                      notes: notes,
+                    );
+
+                    // Share PDF
+                    await Printing.sharePdf(
+                      bytes: pdfBytes,
+                      filename: 'Prescription_$prescriptionId.pdf',
+                    );
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Error sharing PDF: $e'),
+                          backgroundColor: AppColors.error,
+                        ),
+                      );
+                    }
+                  }
                 },
                 borderRadius: BorderRadius.circular(14.r),
                 child: Row(
@@ -298,8 +320,8 @@ class PrescriptionDetailsPage extends StatelessWidget {
             height: 52.h,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(14.r),
-              gradient: LinearGradient(
-                colors: [
+              gradient: const LinearGradient(
+                colors: const [
                   AppColors.primary,
                   AppColors.primaryDark,
                 ],
@@ -317,15 +339,47 @@ class PrescriptionDetailsPage extends StatelessWidget {
             child: Material(
               color: Colors.transparent,
               child: InkWell(
-                onTap: () {
-                  // TODO: Implement PDF download functionality
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('msg_download_soon'.tr(context)),
-                      backgroundColor: AppColors.surface,
-                      behavior: SnackBarBehavior.floating,
-                    ),
-                  );
+                onTap: () async {
+                  try {
+                    // Generate PDF
+                    final pdfService = PdfService();
+                    final pdfBytes = await pdfService.generatePrescriptionPdf(
+                      prescriptionId: prescriptionId,
+                      date: date,
+                      doctorName: doctorName,
+                      medicines: medicines,
+                      notes: notes,
+                    );
+
+                    // Save PDF to documents directory
+                    final output = await getApplicationDocumentsDirectory();
+                    final file =
+                        File('${output.path}/Prescription_$prescriptionId.pdf');
+                    await file.writeAsBytes(pdfBytes);
+
+                    if (context.mounted) {
+                      // Show success
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('msg_download_success'.tr(context)),
+                          backgroundColor: AppColors.success,
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    }
+
+                    // Open file
+                    await OpenFile.open(file.path);
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Error downloading PDF: $e'),
+                          backgroundColor: AppColors.error,
+                        ),
+                      );
+                    }
+                  }
                 },
                 borderRadius: BorderRadius.circular(14.r),
                 child: Row(

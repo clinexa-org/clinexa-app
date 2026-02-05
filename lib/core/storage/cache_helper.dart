@@ -74,6 +74,7 @@ class CacheHelper {
   }
 
   Future<String?> readUserId() => _secureStorage.read(key: _keyUserId);
+  Future<String?> getUserId() => readUserId();
   Future<String?> readUserName() => _secureStorage.read(key: _keyUserName);
   Future<String?> readUserRole() => _secureStorage.read(key: _keyUserRole);
   Future<String?> readUserAvatar() => _secureStorage.read(key: _keyUserAvatar);
