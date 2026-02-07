@@ -1,7 +1,8 @@
 
 <img width="2400" height="1792" alt="Gemini_Generated_Image_3a7tcs3a7tcs3a7t" src="https://github.com/user-attachments/assets/ece4a69c-5f3e-4a99-9a22-42574cee77f2" />
 
-#🏥 ClinExa Mobile App 
+####🏥 ClinExa Mobile App 
+
 ClinExa is a comprehensive telemedicine and clinic management mobile application built with Flutter. It is designed to streamline the interaction between patients and healthcare providers, offering a seamless experience for booking appointments, managing prescriptions, and receiving real-time updates.
 
 This application follows **Clean Architecture** principles to ensure scalability, testability, and maintainability, leveraging **BLoC/Cubit** for robust state management.
