@@ -229,6 +229,7 @@ class NextAppointmentCard extends StatelessWidget {
             ],
           ),
         ),
+        SizedBox(height: 24.h),
       ],
     );
   }

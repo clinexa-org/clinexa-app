@@ -17,47 +17,27 @@ import '../../../../app/widgets/shimmer_loading.dart';
 import '../../../../app/widgets/empty_state_widget.dart';
 
 class PrescriptionsPage extends StatelessWidget {
-  const PrescriptionsPage({super.key});
+  final bool showBackButton;
+
+  const PrescriptionsPage({
+    super.key,
+    this.showBackButton = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: CustomAppBar(
-        title: 'recent_prescriptions'.tr(context),
+        title: 'prescriptions'.tr(context),
         centerTitle: true,
-        showBackButton: false,
+        showBackButton: showBackButton,
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(vertical: 20.h),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'prescriptions_title'.tr(context),
-                    style: AppTextStyles.interBoldw700F24.copyWith(
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  SizedBox(height: 4.h),
-                  Text(
-                    'prescriptions_subtitle'.tr(context),
-                    style: AppTextStyles.interMediumw500F14.copyWith(
-                      color: AppColors.textMuted,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            SizedBox(height: 24.h),
-
             // Prescriptions List
             Expanded(
               child: BlocBuilder<PrescriptionsCubit, PrescriptionsState>(

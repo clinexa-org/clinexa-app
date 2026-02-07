@@ -30,7 +30,7 @@ class _HomePageState extends State<HomePage> {
   final List<Widget> _pages = [
     const _HomeContent(),
     const AppointmentsPage(),
-    const PrescriptionsPage(),
+    const PrescriptionsPage(showBackButton: false),
     const ProfilePage(),
   ];
 

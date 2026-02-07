@@ -83,9 +83,11 @@ class _BookingFlowPageState extends State<BookingFlowPage> {
         appBar: CustomAppBar(
           centerTitle: true,
           title: stepTitles[_currentStep],
-          onBackPressed: _currentStep == 0
-              ? () => Navigator.pop(context)
-              : _goToPreviousStep,
+          onBackPressed: _currentStep == 3
+              ? null // Hide back button on confirmation step
+              : _currentStep == 0
+                  ? () => Navigator.pop(context)
+                  : _goToPreviousStep,
         ),
         body: Column(
           children: [

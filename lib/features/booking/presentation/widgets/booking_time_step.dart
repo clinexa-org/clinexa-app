@@ -13,6 +13,7 @@ import '../../../appointments/domain/entities/slot_entity.dart';
 import '../../../appointments/presentation/cubit/appointments_cubit.dart';
 import '../../../appointments/presentation/cubit/appointments_state.dart';
 import '../../../../core/utils/date_extensions.dart';
+import '../../../../app/widgets/shimmer_loading.dart';
 
 class BookingTimeStep extends StatefulWidget {
   final DateTime? selectedDate;
@@ -65,7 +66,7 @@ class _BookingTimeStepState extends State<BookingTimeStep> {
     return BlocBuilder<AppointmentsCubit, AppointmentsState>(
       builder: (context, state) {
         if (state.slotsStatus == SlotsStatus.loading) {
-          return const Center(child: CircularProgressIndicator());
+          return _buildShimmerLoading();
         }
 
         if (state.slotsStatus == SlotsStatus.failure) {
@@ -138,6 +139,51 @@ class _BookingTimeStepState extends State<BookingTimeStep> {
           ],
         );
       },
+    );
+  }
+
+  Widget _buildShimmerLoading() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 24.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: 24.h),
+          // Morning Section Title Shimmer
+          ShimmerLoading(width: 80.w, height: 16.h),
+          SizedBox(height: 12.h),
+          // Slots Shimmer
+          Wrap(
+            spacing: 12.w,
+            runSpacing: 12.h,
+            children: List.generate(
+              6,
+              (index) => ShimmerLoading(
+                width: 90.w,
+                height: 40.h,
+                borderRadius: 12.r,
+              ),
+            ),
+          ),
+          SizedBox(height: 24.h),
+          // Afternoon Section Title Shimmer
+          ShimmerLoading(width: 80.w, height: 16.h),
+          SizedBox(height: 12.h),
+          // Slots Shimmer
+          Wrap(
+            spacing: 12.w,
+            runSpacing: 12.h,
+            children: List.generate(
+              6,
+              (index) => ShimmerLoading(
+                width: 90.w,
+                height: 40.h,
+                borderRadius: 12.r,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
