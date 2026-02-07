@@ -1,7 +1,9 @@
 import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 import '../../app/theme/app_colors.dart';
+import '../localization/app_localizations.dart';
 
 class PdfService {
   /// Generates a PDF for a prescription and returns the bytes.
@@ -11,12 +13,13 @@ class PdfService {
     required String doctorName,
     required List<Map<String, dynamic>> medicines,
     required String notes,
+    required AppLocalizations localizations,
   }) async {
     final doc = pw.Document();
 
-    // Load a font if necessary, otherwise use standard fonts
-    // final font = await PdfGoogleFonts.interRegular();
-    // final fontBold = await PdfGoogleFonts.interBold();
+    // Load fonts with Unicode support (Cairo supports Arabic + Latin + symbols)
+    final fontRegular = await PdfGoogleFonts.cairoRegular();
+    final fontBold = await PdfGoogleFonts.cairoBold();
 
     // Define colors using the app theme colors (converted to PdfColor)
     final PdfColor primaryColor = _toPdfColor(AppColors.primary);
@@ -24,24 +27,38 @@ class PdfService {
     final PdfColor textColor = _toPdfColor(AppColors.textPrimary);
     final PdfColor textSecondaryColor = _toPdfColor(AppColors.textSecondary);
 
+    final isRTL = localizations.isRTL;
+    final textDirection = isRTL ? pw.TextDirection.rtl : pw.TextDirection.ltr;
+
+    // Create theme with Cairo font for full Unicode support (Arabic + symbols)
+    final theme = pw.ThemeData.withFont(
+      base: fontRegular,
+      bold: fontBold,
+      italic: fontRegular, // Cairo doesn't have italic, fallback to regular
+      boldItalic: fontBold,
+    );
+
     doc.addPage(
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
+        theme: theme,
+        textDirection: textDirection,
         margin: const pw.EdgeInsets.all(32),
         build: (pw.Context context) {
           return [
-            _buildHeader(
-                prescriptionId, date, primaryColor, textSecondaryColor),
+            _buildHeader(prescriptionId, date, primaryColor, textSecondaryColor,
+                localizations),
             pw.SizedBox(height: 20),
-            _buildDoctorInfo(doctorName, textColor),
+            _buildDoctorInfo(doctorName, textColor, localizations),
             pw.SizedBox(height: 20),
-            _buildMedicinesTable(medicines, primaryColor, textColor),
+            _buildMedicinesTable(
+                medicines, primaryColor, textColor, localizations),
             if (notes.isNotEmpty) ...[
               pw.SizedBox(height: 20),
-              _buildNotesSection(notes, accentColor, textColor),
+              _buildNotesSection(notes, accentColor, textColor, localizations),
             ],
             pw.SizedBox(height: 40),
-            _buildFooter(textSecondaryColor),
+            _buildFooter(textSecondaryColor, localizations),
           ];
         },
       ),
@@ -50,8 +67,8 @@ class PdfService {
     return doc.save();
   }
 
-  pw.Widget _buildHeader(
-      String id, String date, PdfColor primary, PdfColor secondary) {
+  pw.Widget _buildHeader(String id, String date, PdfColor primary,
+      PdfColor secondary, AppLocalizations localizations) {
     return pw.Row(
       mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
       crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -60,7 +77,7 @@ class PdfService {
           crossAxisAlignment: pw.CrossAxisAlignment.start,
           children: [
             pw.Text(
-              'CLINEXA',
+              localizations.translate('app_name'),
               style: pw.TextStyle(
                 fontSize: 24,
                 fontWeight: pw.FontWeight.bold,
@@ -68,7 +85,7 @@ class PdfService {
               ),
             ),
             pw.Text(
-              'Prescription',
+              localizations.translate('label_prescription_title'),
               style: pw.TextStyle(
                 fontSize: 18,
                 color: secondary,
@@ -79,15 +96,18 @@ class PdfService {
         pw.Column(
           crossAxisAlignment: pw.CrossAxisAlignment.end,
           children: [
-            pw.Text('ID: #$id', style: pw.TextStyle(color: secondary)),
-            pw.Text('Date: $date', style: pw.TextStyle(color: secondary)),
+            pw.Text('${localizations.translate('label_id')}: #$id',
+                style: pw.TextStyle(color: secondary)),
+            pw.Text('${localizations.translate('label_date')}: $date',
+                style: pw.TextStyle(color: secondary)),
           ],
         ),
       ],
     );
   }
 
-  pw.Widget _buildDoctorInfo(String doctorName, PdfColor textColor) {
+  pw.Widget _buildDoctorInfo(
+      String doctorName, PdfColor textColor, AppLocalizations localizations) {
     return pw.Container(
       padding: const pw.EdgeInsets.all(12),
       decoration: pw.BoxDecoration(
@@ -97,7 +117,7 @@ class PdfService {
       child: pw.Row(
         children: [
           pw.Text(
-            'Doctor: ',
+            '${localizations.translate('label_doctor')}: ',
             style: pw.TextStyle(
               fontSize: 14,
               fontWeight: pw.FontWeight.bold,
@@ -117,8 +137,14 @@ class PdfService {
   }
 
   pw.Widget _buildMedicinesTable(List<Map<String, dynamic>> medicines,
-      PdfColor primary, PdfColor textColor) {
-    final headers = ['Medicine', 'Dosage', 'Type', 'Duration', 'Instructions'];
+      PdfColor primary, PdfColor textColor, AppLocalizations localizations) {
+    final headers = [
+      localizations.translate('label_medicine'),
+      localizations.translate('label_dosage'),
+      localizations.translate('label_type'),
+      localizations.translate('label_duration'),
+      localizations.translate('label_instructions')
+    ];
     final data = medicines.map((m) {
       return [
         m['name'] ?? '',
@@ -143,8 +169,8 @@ class PdfService {
     );
   }
 
-  pw.Widget _buildNotesSection(
-      String notes, PdfColor accent, PdfColor textColor) {
+  pw.Widget _buildNotesSection(String notes, PdfColor accent,
+      PdfColor textColor, AppLocalizations localizations) {
     return pw.Container(
       width: double.infinity,
       padding: const pw.EdgeInsets.all(12),
@@ -157,7 +183,7 @@ class PdfService {
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
           pw.Text(
-            'Doctor\'s Notes:',
+            localizations.translate('label_doctors_notes'),
             style: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: accent),
           ),
           pw.SizedBox(height: 5),
@@ -170,10 +196,10 @@ class PdfService {
     );
   }
 
-  pw.Widget _buildFooter(PdfColor secondary) {
+  pw.Widget _buildFooter(PdfColor secondary, AppLocalizations localizations) {
     return pw.Center(
       child: pw.Text(
-        'Generated by Clinexa App',
+        localizations.translate('msg_generated_by'),
         style: pw.TextStyle(
             fontSize: 10, color: secondary, fontStyle: pw.FontStyle.italic),
       ),

@@ -81,12 +81,6 @@ class FirebaseConfig {
       debugPrint('FCM Token refreshed: $newToken');
       // TODO: Send new token to your backend
     });
-
-    // Handle foreground messages
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      debugPrint('Received foreground message: ${message.messageId}');
-      // TODO: Handle foreground notification
-    });
   }
 
   /// Get the current FCM token

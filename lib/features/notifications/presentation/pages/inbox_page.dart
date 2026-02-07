@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:iconsax/iconsax.dart';
 import '../../../../app/theme/app_colors.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../domain/entities/notification_entity.dart';
 import '../cubit/notifications_cubit.dart';
 import '../cubit/notifications_state.dart';
@@ -29,7 +30,7 @@ class _InboxPageState extends State<InboxPage> {
       appBar: AppBar(
         backgroundColor: AppColors.background,
         title: Text(
-          'Notifications',
+          'notifications'.tr(context),
           style: TextStyle(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.bold,
@@ -57,14 +58,15 @@ class _InboxPageState extends State<InboxPage> {
                       color: AppColors.error, size: 48),
                   const SizedBox(height: 16),
                   Text(
-                    state.errorMessage ?? 'Failed to load notifications',
+                    state.errorMessage ??
+                        'error_load_notifications'.tr(context),
                     style: TextStyle(color: AppColors.textSecondary),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () =>
                         context.read<NotificationsCubit>().getNotifications(),
-                    child: const Text('Retry'),
+                    child: Text('retry'.tr(context)),
                   ),
                 ],
               ),
@@ -83,7 +85,7 @@ class _InboxPageState extends State<InboxPage> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'No notifications yet',
+                    'empty_notifications'.tr(context),
                     style: TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 16,
@@ -220,7 +222,7 @@ class _NotificationCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    _formatDate(notification.createdAt),
+                    _formatDate(context, notification.createdAt),
                     style: TextStyle(
                       color: AppColors.textMuted.withOpacity(0.7),
                       fontSize: 12,
@@ -235,18 +237,21 @@ class _NotificationCard extends StatelessWidget {
     );
   }
 
-  String _formatDate(DateTime date) {
+  String _formatDate(BuildContext context, DateTime date) {
     final now = DateTime.now();
     final diff = now.difference(date);
 
     if (diff.inMinutes < 1) {
-      return 'Just now';
+      return 'time_just_now'.tr(context);
     } else if (diff.inHours < 1) {
-      return '${diff.inMinutes}m ago';
+      return 'time_minutes_ago'
+          .tr(context, params: {'minutes': diff.inMinutes.toString()});
     } else if (diff.inDays < 1) {
-      return '${diff.inHours}h ago';
+      return 'time_hours_ago'
+          .tr(context, params: {'hours': diff.inHours.toString()});
     } else if (diff.inDays < 7) {
-      return '${diff.inDays}d ago';
+      return 'time_days_ago'
+          .tr(context, params: {'days': diff.inDays.toString()});
     } else {
       return DateFormat('MMM d, yyyy').format(date);
     }

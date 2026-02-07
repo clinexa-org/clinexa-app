@@ -1,86 +1,148 @@
 # ClinExa Mobile App 🏥
 
-ClinExa is a premium, full-featured telemedicine and clinic management mobile application built with Flutter. It follows Clean Architecture principles to ensure scalability, maintainability, and a high-performance user experience.
+ClinExa is a comprehensive telemedicine and clinic management mobile application built with Flutter. It is designed to streamline the interaction between patients and healthcare providers, offering a seamless experience for booking appointments, managing prescriptions, and receiving real-time updates.
+
+This application follows **Clean Architecture** principles to ensure scalability, testability, and maintainability, leveraging **BLoC/Cubit** for robust state management.
 
 ## 🚀 Features
 
-- **🔐 Dual-Role Authentication**: Secure login, registration, and password recovery.
-- **📅 Appointment Booking**: Optimized single-doctor booking flow with date, time, and reason selection.
-- **🔄 Rescheduling System**: Smart appointment management with 24-hour validation and real-time updates.
-- **📄 Prescription Management**: View and track medical prescriptions from healthcare providers.
-- **👤 Profile Management**: Customizable user profiles with real-time field validation and image upload via Cloudinary.
-- **🌍 Advanced Localization**: Fully supported Arabic (AR) and English (EN) languages with automatic RTL layout switching.
-- **✨ Premium UI/UX**:
-  - **Shimmer Loading**: custom placeholders for a flicker-free loading experience.
-  - **Consistent Toasts**: Professional feedback using `ToastHelper`.
-  - **Centralized Navigation**: Semantic routing powered by `GoRouter`.
+### 🔐 Authentication & Security
+- **Secure Login & Registration**: User-friendly authentication flow with email and password.
+- **Password Recovery**: OTP-based password reset functionality securely handled via email.
+- **Session Management**: Persistent login sessions using secure storage (`flutter_secure_storage`).
+- **Logout Functionality**: Securely clears user session and navigates to the login screen.
 
-## 🏗️ Architecture & Project Structure
+### 📅 Appointment Management
+- **Smart Booking System**: Book appointments with specific doctors by selecting available dates and times.
+- **Status Tracking**: Real-time status updates (Pending, Confirmed, Completed, Cancelled).
+- **Rescheduling**: Flexible rescheduling options with instant confirmation.
+- **Cancellation**: Users can cancel appointments with valid reasons.
+- **Appointment History**: Separate tabs for Upcoming and Past appointments for easy tracking.
 
-The project follows **Clean Architecture** patterns, divided into layers:
+### 💊 Prescription & Medical Records
+- **Digital Prescriptions**: View detailed prescriptions directly within the app.
+- **Medicine Details**: Clear display of medicine names, dosages, durations, and specific instructions.
+- **PDF Generation**: Generate and download professional PDF versions of prescriptions (`pdf`, `printing`) for sharing or printing.
+- **Doctor's Notes**: Access notes and instructions provided by the doctor for each visit.
 
-- **Domain Layer**: Core business logic (Entities, Repositories Interfaces, Use Cases).
-- **Data Layer**: Implementation details (Models, Repositories Implementations, Remote/Local Data Sources).
-- **Presentation Layer**: UI and State Management (Widgets, Pages, BLoC/Cubit).
+### 🔔 Notifications & Real-time Updates
+- **Push Notifications**: Integrated with Firebase Cloud Messaging (FCM) for critical alerts.
+- **Real-time Synchronization**: Uses **Firebase Realtime Database** to instantly update appointment statuses and dashboard data without manual refresh.
+- **In-App Notifications**: dedicated notifications screen to view history of alerts.
 
-### Folder Hierarchy
+### 👤 User Profile
+- **Profile Management**: Update personal details including Name, Age, Gender, Phone Number, and Address.
+- **Health Information**: Store and manage essential patient data.
 
+### 🌍 Localization & Accessibility
+- **Multi-language Support**: Fully localized for **English** and **Arabic** (RTL support included).
+- **Responsive Design**: UI adapts to various screen sizes using `flutter_screenutil`.
+- **User-Friendly UI**: Implements Shimmer loading effects, Toast notifications, and intuitive navigation.
+
+## 🏗️ Architecture
+
+The project is structured using **Clean Architecture** to separate concerns and improve code quality.
+
+### Layers
+1.  **Domain Layer**:
+    *   **Entities**: Core business objects.
+    *   **Repositories (Interfaces)**: Abstract definitions of data operations.
+    *   **Use Cases**: Specific business logic encapsulating single tasks.
+
+2.  **Data Layer**:
+    *   **Models**: Data transfer objects (DTOs) with JSON serialization (`json_serializable`).
+    *   **Data Sources**:
+        *   *Remote*: API calls using **Dio**.
+        *   *Local*: Caching with **Shared Preferences** and Secure Storage.
+    *   **Repositories (Implementations)**: Concrete implementations of domain interfaces.
+
+3.  **Presentation Layer**:
+    *   **State Management**: Uses **Flutter BLoC (Cubit)** pattern for predictable state changes.
+    *   **Widgets**: Reusable UI components.
+    *   **Pages**: Screen layouts.
+
+### Folder Structure
 ```text
 lib/
-├── app/                # Global theme, router, and common widgets
-├── core/               # Utilities, networking, localization, and DI
-├── features/           # Feature-based modularity
-│   ├── auth/
-│   ├── appointments/   # Booking and management
-│   ├── prescriptions/
-│   ├── profile/
-│   └── home/
-└── main.dart           # App entry point with Global Providers
+├── app/                  # Application configuration
+│   ├── router/           # GoRouter configuration
+│   ├── theme/            # App theme and styles
+│   └── screens/          # Shared/Global screens
+├── core/                 # Core functionality
+│   ├── config/           # Environment and Firebase config
+│   ├── di/               # Dependency Injection (GetIt)
+│   ├── error/            # Error handling and failures
+│   ├── network/          # Dio client and interceptors
+│   ├── services/         # External services (PDF, Notification)
+│   └── utils/            # Constants, extensions, and helpers
+├── features/             # Feature-based modules
+│   ├── auth/             # Authentication (Login, Register, Forgot Password)
+│   ├── appointments/     # Booking, Listing, Details
+│   ├── prescriptions/    # Prescription lists and details
+│   ├── profile/          # User profile management
+│   ├── home/             # Dashboard and main landing
+│   ├── notifications/    # Notification logic and UI
+│   └── doctors/          # Doctor listing and details
+└── main.dart             # Application entry point
 ```
 
-## 🔄 Appointment Booking Flow
+## 🛠️ Technology Stack
 
-```mermaid
-graph TD
-    A[Home Page] -->|Book Appointment| B[Booking Flow]
-    B -->|Select Date & Time| C[Input Notes]
-    C -->|Review Details| D[Confirm Booking]
-    D -->|API Call| E{Success?}
-    E -->|Yes| F[Show Success Toast]
-    F -->|Navigate| G[Appointments List]
-    E -->|No| H[Show Error Toast]
-    H -->|Retry| C
-```
-
-## 🛠️ Technical Stack
-
-| Category             | Technology                        |
-| -------------------- | --------------------------------- |
-| **Framework**        | Flutter / Dart                    |
-| **State Management** | BLoC / Cubit                      |
-| **Routing**          | GoRouter                          |
-| **Dep. Injection**   | GetIt                             |
-| **Networking**       | Dio                               |
-| **Storage**          | Shared Preferences                |
-| **UI Enhancements**  | Shimmer, Iconsax, ScreenUtil      |
-| **Localization**     | flutter_localization (JSON based) |
+| Category | Package/Technology |
+|----------|-------------------|
+| **Framework** | Flutter, Dart |
+| **State Management** | `flutter_bloc`, `bloc`, `equatable` |
+| **Dependency Injection** | `get_it` |
+| **Navigation** | `go_router` |
+| **Networking** | `dio`, `pretty_dio_logger`, `dio_smart_retry` |
+| **Local Storage** | `shared_preferences`, `flutter_secure_storage` |
+| **Real-time & DB** | Firebase Realtime Database, Firebase Core |
+| **Notifications** | Firebase Messaging, `flutter_local_notifications` |
+| **UI Components** | `flutter_screenutil`, `shimmer`, `flutter_spinkit`, `google_fonts`, `iconsax` |
+| **Utilities** | `intl`, `logger`, `form_field_validator`, `dartz` |
+| **PDF & Printing** | `pdf`, `printing`, `path_provider`, `open_file_plus` |
+| **Environment** | `flutter_dotenv` |
+| **Code Generation** | `build_runner`, `json_serializable` |
 
 ## 📦 Getting Started
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/your-repo/clinexa-mobile.git
-   ```
-2. **Setup Dependencies**
-   ```bash
-   flutter pub get
-   ```
-3. **Run the App**
-   ```bash
-   # For debug mode
-   flutter run
-   ```
+### Prerequisites
+- Flutter SDK (>=3.4.3 <4.0.0)
+- Dart SDK
+- Android Studio / VS Code
+- Firebase Project Setup (if running with your own backend)
+
+### Installation
+
+1.  **Clone the Repository**
+    ```bash
+    git clone https://github.com/your-repo/clinexa-mobile.git
+    cd clinexa-mobile
+    ```
+
+2.  **Install Dependencies**
+    ```bash
+    flutter pub get
+    ```
+
+3.  **Environment Setup**
+    Ensure you have the environment files set up in `assets/env/`:
+    *   `assets/env/.env.dev`
+    *   `assets/env/.env.prod`
+
+4.  **Run the Application**
+    ```bash
+    # Run in debug mode
+    flutter run
+
+    # Run in release mode
+    flutter run --release
+    ```
+
+## 🤝 Contribution
+
+Contributions are welcome! Please fork the repository and submit a pull request for any enhancements or bug fixes.
 
 ---
 
-Developed with ❤️ by the ClinExa Team.
+**Developed for ClinExa Healthcare Solutions.**

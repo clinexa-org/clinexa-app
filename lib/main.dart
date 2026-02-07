@@ -16,7 +16,7 @@ import 'core/config/firebase_config.dart';
 import 'core/di/injection.dart';
 import 'core/presentation/cubit/layout_cubit.dart';
 import 'core/services/notification_service.dart';
-import 'core/services/socket_service.dart';
+
 import 'core/storage/cache_helper.dart';
 import 'features/auth/presentation/cubit/auth_cubit.dart';
 import 'features/profile/presentation/cubit/patient_cubit.dart';
@@ -67,19 +67,35 @@ void main() async {
     debugPrint('Initial Route Check Failed: $e');
   }
 
-  // 6. Initialize Notification Services (if logged in)
+  // 7. Initialize Notification Services (Always)
   final notificationService = sl<NotificationService>();
-  final socketService = sl<SocketService>();
+  await notificationService.initialize(
+    onNotificationReceived: () {
+      try {
+        debugPrint('🔄 Refreshing data from Notification callback...');
+        if (sl.isRegistered<NotificationsCubit>()) {
+          sl<NotificationsCubit>().getNotifications();
+        }
+        if (sl.isRegistered<AppointmentsCubit>()) {
+          sl<AppointmentsCubit>().getMyAppointments();
+        }
+      } catch (e) {
+        debugPrint('Error refreshing data from notification: $e');
+      }
+    },
+  );
+  await notificationService.registerDeviceToken();
+
   final appointmentsCubit = sl<AppointmentsCubit>();
   final prescriptionsCubit = sl<PrescriptionsCubit>();
 
-  // Only fetch data if already authenticated
+  // Only init Socket and fetch data if already authenticated
   if (authCubit.state.isAuthed) {
     appointmentsCubit.getMyAppointments();
     prescriptionsCubit.getMyPrescriptions();
-    await _initializeNotifications(
+
+    await _initializeRealtime(
       notificationService: notificationService,
-      socketService: socketService,
       token: await sl<CacheHelper>().readToken() ?? '',
       appointmentsCubit: appointmentsCubit,
       prescriptionsCubit: prescriptionsCubit,
@@ -112,49 +128,18 @@ void main() async {
   );
 }
 
-/// Initialize notification and socket services for authenticated users
-Future<void> _initializeNotifications({
+/// Initialize RTDB listener for authenticated users
+Future<void> _initializeRealtime({
   required NotificationService notificationService,
-  required SocketService socketService,
   required String token,
   required AppointmentsCubit appointmentsCubit,
   required PrescriptionsCubit prescriptionsCubit,
 }) async {
   try {
-    // Initialize FCM and local notifications
-    await notificationService.initialize();
-    await notificationService.registerDeviceToken();
-
-    // Connect to socket server
-    if (token.isNotEmpty) {
-      // Connect to socket server
-      // 1. Remove /api suffix
-      // 2. Remove trailing slash if present to avoid double slashes
-      var socketUrl = Env.baseUrl.replaceAll('/api', '');
-      if (socketUrl.endsWith('/')) {
-        socketUrl = socketUrl.substring(0, socketUrl.length - 1);
-      }
-
-      debugPrint('Connecting to socket at: $socketUrl');
-      socketService.connect(socketUrl, token);
-
-      // Start listening to RTDB notifications (foreground updates)
-      final userId = await sl<CacheHelper>().getUserId();
-      if (userId != null && userId.isNotEmpty) {
-        notificationService.listenToRealtimeNotifications(userId);
-      }
-
-      // Listen for patient-specific events
-      socketService.listenForPatientEvents(
-        onAppointmentUpdated: (data) {
-          debugPrint('Appointment updated via socket: $data');
-          appointmentsCubit.getMyAppointments();
-        },
-        onPrescriptionCreated: (data) {
-          debugPrint('Prescription created via socket: $data');
-          prescriptionsCubit.getMyPrescriptions();
-        },
-      );
+    // Start listening to RTDB notifications (foreground updates)
+    final userId = await sl<CacheHelper>().getUserId();
+    if (userId != null && userId.isNotEmpty) {
+      notificationService.listenToRealtimeNotifications(userId);
     }
   } catch (e) {
     debugPrint('Notification initialization failed: $e');

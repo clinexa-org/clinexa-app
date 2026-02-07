@@ -278,5 +278,17 @@
   "label_duration": "المدة",
   "label_instructions": "التعليمات",
   "msg_generated_by": "تم إنشاؤه بواسطة تطبيق كلينكسا",
-  "label_clinic_name": "كلينكسا"
+  "label_clinic_name": "كلينكسا",
+  "error_load_notifications": "فشل تحميل الإشعارات",
+  "retry": "إعادة المحاولة",
+  "empty_notifications": "لا توجد إشعارات حتى الآن",
+  "time_just_now": "الآن",
+  "time_minutes_ago": "منذ {minutes} دقيقة",
+  "time_hours_ago": "منذ {hours} ساعة",
+  "time_days_ago": "منذ {days} يوم",
+  "error_load_slots": "حدث خطأ أثناء تحميل المواعيد",
+  "error_app_init": "فشل تهيئة التطبيق",
+  "msg_restart_app": "يرجى إعادة تشغيل التطبيق",
+  "error_share_pdf": "حدث خطأ أثناء مشاركة ملف PDF: {error}",
+  "error_download_pdf": "حدث خطأ أثناء تحميل ملف PDF: {error}"
 }

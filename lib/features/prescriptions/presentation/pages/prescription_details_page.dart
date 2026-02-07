@@ -274,6 +274,7 @@ class PrescriptionDetailsPage extends StatelessWidget {
                       doctorName: doctorName,
                       medicines: medicines,
                       notes: notes,
+                      localizations: AppLocalizations.of(context)!,
                     );
 
                     // Share PDF
@@ -285,7 +286,8 @@ class PrescriptionDetailsPage extends StatelessWidget {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Error sharing PDF: $e'),
+                          content: Text('error_share_pdf'
+                              .tr(context, params: {'error': e.toString()})),
                           backgroundColor: AppColors.error,
                         ),
                       );
@@ -349,6 +351,7 @@ class PrescriptionDetailsPage extends StatelessWidget {
                       doctorName: doctorName,
                       medicines: medicines,
                       notes: notes,
+                      localizations: AppLocalizations.of(context)!,
                     );
 
                     // Save PDF to documents directory
@@ -374,7 +377,8 @@ class PrescriptionDetailsPage extends StatelessWidget {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Error downloading PDF: $e'),
+                          content: Text('error_download_pdf'
+                              .tr(context, params: {'error': e.toString()})),
                           backgroundColor: AppColors.error,
                         ),
                       );

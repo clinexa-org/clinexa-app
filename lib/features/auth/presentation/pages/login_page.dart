@@ -98,7 +98,7 @@ class _LoginPageState extends State<LoginPage> {
 
                     // Title
                     Text(
-                      'Clinexa',
+                      'app_name'.tr(context),
                       style: AppTextStyles.interSemiBoldw600F24.copyWith(
                         color: AppColors.accentLight,
                       ),

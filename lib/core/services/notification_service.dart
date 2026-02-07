@@ -14,11 +14,15 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
   final FirebaseDatabase _database = FirebaseDatabase.instance;
   final ApiClient _apiClient;
+  VoidCallback? _onNotificationReceived;
 
   NotificationService(this._apiClient);
 
   /// Initialize the notification service
-  Future<void> initialize() async {
+  /// [onNotificationReceived] - Optional callback when a foreground notification is received
+  Future<void> initialize({VoidCallback? onNotificationReceived}) async {
+    _onNotificationReceived = onNotificationReceived;
+
     // 1. Request Permission
     await _firebaseMessaging.requestPermission(
       alert: true,
@@ -37,8 +41,30 @@ class NotificationService {
     );
     await _localNotifications.initialize(initSettings);
 
-    // 3. Handle Foreground Messages
-    FirebaseMessaging.onMessage.listen(_showLocalNotification);
+    // 3. Create Android Notification Channel
+    await _createNotificationChannel();
+
+    // 4. Handle Foreground Messages
+    FirebaseMessaging.onMessage.listen((message) {
+      debugPrint('FCM Foreground Message Received in NotificationService');
+      _showLocalNotification(message);
+      _onNotificationReceived?.call();
+    });
+  }
+
+  /// Create high-importance Android notification channel
+  Future<void> _createNotificationChannel() async {
+    const AndroidNotificationChannel channel = AndroidNotificationChannel(
+      'high_importance_channel',
+      'High Importance Notifications',
+      description: 'This channel is used for important notifications.',
+      importance: Importance.max,
+    );
+
+    await _localNotifications
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
   }
 
   /// Register device token with backend
@@ -98,19 +124,32 @@ class NotificationService {
       try {
         final data = Map<String, dynamic>.from(event.snapshot.value as Map);
 
-        // Check if notification is recent (within last minute)
+        // Check if notification is recent (within last 5 minutes)
+        // Using local time for comparison to avoid timezone issues, assuming creation time is relatively synced
         final createdAtStr = data['createdAt'];
         if (createdAtStr != null) {
-          final createdAt = DateTime.parse(createdAtStr);
-          if (DateTime.now().difference(createdAt).inMinutes > 2) {
-            return; // Skip old notifications
+          try {
+            final createdAt = DateTime.parse(createdAtStr);
+            final now = DateTime.now();
+            final difference = now.difference(createdAt).inMinutes;
+
+            debugPrint(
+                'RTDB Notification Time Check: Now=$now, Created=$createdAt, Diff=${difference}min');
+
+            if (difference.abs() > 5) {
+              // Increased to 5 mins and using abs() to handle minor clock skew
+              debugPrint('⚠️ Skipping old notification (>5min diff)');
+              return;
+            }
+          } catch (e) {
+            debugPrint('⚠️ Error parsing notification date: $e');
           }
         }
 
         final title = data['title'] ?? 'New Notification';
         final body = data['body'] ?? '';
 
-        debugPrint('NotificationService: Received RTDB notification: $title');
+        debugPrint('✅ NotificationService: Showing RTDB notification: $title');
 
         _showLocalNotification(RemoteMessage(
           notification: RemoteNotification(title: title, body: body),
@@ -118,6 +157,9 @@ class NotificationService {
               ? Map<String, dynamic>.from(data['data'])
               : {},
         ));
+
+        // Notify UI to refresh
+        _onNotificationReceived?.call();
       } catch (e) {
         debugPrint('NotificationService: Error parsing RTDB data: $e');
       }

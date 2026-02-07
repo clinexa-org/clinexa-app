@@ -1,5 +1,5 @@
-// app/screens/app_initialization_error_screen.dart
 import 'package:flutter/material.dart';
+import '../../core/localization/app_localizations.dart';
 
 /// Screen shown when app fails to initialize
 class AppInitializationErrorScreen extends StatelessWidget {
@@ -21,18 +21,18 @@ class AppInitializationErrorScreen extends StatelessWidget {
                   color: Colors.red,
                 ),
                 const SizedBox(height: 16),
-                const Text(
-                  'Failed to initialize app',
-                  style: TextStyle(
+                Text(
+                  'error_app_init'.tr(context),
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'Please restart the app',
-                  style: TextStyle(color: Colors.grey),
+                Text(
+                  'msg_restart_app'.tr(context),
+                  style: const TextStyle(color: Colors.grey),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
@@ -40,7 +40,7 @@ class AppInitializationErrorScreen extends StatelessWidget {
                   onPressed: () {
                     // Could trigger app restart or cleanup here
                   },
-                  child: const Text('Retry'),
+                  child: Text('retry'.tr(context)),
                 ),
               ],
             ),

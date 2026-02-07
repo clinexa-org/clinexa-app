@@ -73,10 +73,10 @@ class _BookingTimeStepState extends State<BookingTimeStep> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(state.errorMessage ?? 'Error loading slots'),
+                Text(state.errorMessage ?? 'error_load_slots'.tr(context)),
                 TextButton(
                   onPressed: _fetchSlots,
-                  child: Text('Retry'),
+                  child: Text('retry'.tr(context)),
                 ),
               ],
             ),
